@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Additional custom styles */
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-400 dark:bg-gray-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-500 dark:bg-gray-500;
+}
+
+/* Range input styling */
+input[type="range"] {
+  @apply appearance-none h-2 rounded-lg;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  @apply appearance-none w-4 h-4 rounded-full bg-primary-600 cursor-pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+  @apply w-4 h-4 rounded-full bg-primary-600 cursor-pointer border-0;
+}
+
+/* Markdown content styling */
+.prose pre {
+  @apply rounded-md overflow-auto;
+}
+
+.prose code {
+  @apply font-mono text-sm px-1 py-0.5 rounded;
+}
+
+.prose pre code {
+  @apply p-0 bg-transparent text-current;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4 {
+  @apply font-semibold;
+}
+
+.prose blockquote {
+  @apply border-l-4 pl-4 italic;
+}
+
+/* Dark mode specific styles */
+.dark .prose code:not(pre code) {
+  @apply bg-gray-800;
+}
+
+.dark .prose a {
+  @apply text-primary-400;
+}
+
+.dark .prose blockquote {
+  @apply border-gray-700 text-gray-400;
+}
+
+/* Loading animation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Tooltip styles */
+.tooltip {
+  @apply invisible absolute z-10 rounded px-2 py-1 text-xs text-white bg-gray-900 dark:bg-gray-800;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.has-tooltip:hover .tooltip {
+  @apply visible;
+  opacity: 1;
+}
+
+/* Code syntax highlighting */
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-title.function_ {
+  @apply text-pink-500 dark:text-pink-400;
+}
+
+.hljs-attr,
+.hljs-variable,
+.hljs-template-variable {
+  @apply text-amber-500 dark:text-amber-400;
+}
+
+.hljs-string,
+.hljs-doctag {
+  @apply text-green-500 dark:text-green-400;
+}
+
+.hljs-type,
+.hljs-title.class_ {
+  @apply text-sky-500 dark:text-sky-400;
+}
+
+.hljs-number,
+.hljs-literal,
+.hljs-built_in {
+  @apply text-purple-500 dark:text-purple-400;
+}
+
+.hljs-comment {
+  @apply text-gray-500 dark:text-gray-400;
+}
+
+.hljs-tag {
+  @apply text-gray-600 dark:text-gray-300;
+}
