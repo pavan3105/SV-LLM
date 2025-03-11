@@ -28,7 +28,10 @@ export const sendMessageToLLM = async ({ messages, model, apiKey }) => {
     return sendToGoogle({ messages: enhancedMessages, model, apiKey });
   } else if (model.startsWith('grok')) {
     return sendToXAI({ messages: enhancedMessages, model, apiKey });
-  } else {
+  }else if (model.startsWith('cohere') || model === 'cohere') {
+    return sendToCohere({ messages: enhancedMessages, model, apiKey });
+  }
+   else {
     throw new Error(`Unsupported model: ${model}`);
   }
 };
@@ -162,5 +165,71 @@ const sendToXAI = async ({ messages, model, apiKey }) => {
   } catch (error) {
     console.error('xAI API error:', error);
     throw new Error(error.response?.data?.error?.message || 'Error communicating with xAI');
+  }
+};
+
+/**
+ * Send a message to Cohere API
+ */
+const sendToCohere = async ({ messages, model, apiKey }) => {
+  try {
+    // Convert messages to Cohere format
+    // Cohere uses a chat history format with separate User/Chatbot messages
+    const chatHistory = [];
+    
+    // Process all messages except the most recent user message
+    for (let i = 0; i < messages.length - 1; i++) {
+      const msg = messages[i];
+      if (msg.role === 'system') {
+        // Skip system message for chat history, but we'll use it as preamble later
+        continue;
+      } else if (msg.role === 'user') {
+        chatHistory.push({
+          role: 'User',
+          message: msg.content
+        });
+      } else if (msg.role === 'assistant') {
+        chatHistory.push({
+          role: 'Chatbot',
+          message: msg.content
+        });
+      }
+    }
+    
+    // Get the last user message (the current query)
+    const lastMessage = messages[messages.length - 1];
+    
+    // Get the system message to use as preamble
+    const systemMessage = messages.find(msg => msg.role === 'system')?.content || '';
+    
+    // Determine which Cohere model to use
+    const cohereModel = model === 'cohere' ? 'command' : model.replace('cohere-', '');
+    
+    const response = await axios.post(
+      'https://api.cohere.ai/v1/chat',
+      {
+        model: cohereModel,
+        message: lastMessage.content,
+        chat_history: chatHistory,
+        preamble: systemMessage,
+        temperature: 0.7,
+        connectors: [{ id: "web-search" }]
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+          'Accept': 'application/json'
+        }
+      }
+    );
+    
+    return {
+      role: 'assistant',
+      content: response.data.text
+    };
+  } catch (error) {
+    console.error('Cohere API error:', error);
+    throw new Error(error.response?.data?.message || 'Error communicating with Cohere');
   }
 };

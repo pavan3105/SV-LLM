@@ -208,6 +208,15 @@ const Help = () => {
                       <li>Enter the API key in the Settings page of SV-LLM</li>
                     </ol>
                   </div>
+
+                  <div className="p-3 rounded-lg bg-opacity-10 border border-gray-300 dark:border-gray-700">
+                  <h4 className="font-medium mb-1">Cohere (Command models)</h4>
+                    <ol className="list-decimal list-inside space-y-1 text-sm ml-2">
+                    <li>Create an account at <a href="https://dashboard.cohere.com/api-keys" className="text-primary-600 dark:text-primary-400 hover:underline" target="_blank" rel="noopener noreferrer">Cohere Dashboard</a></li>
+                    <li>Generate an API key in the API Keys section</li>
+                    <li>Enter the API key in the Settings page of SV-LLM</li>
+                    </ol>
+                  </div>
                   
                   <div className="p-3 rounded-lg bg-opacity-10 border border-gray-300 dark:border-gray-700">
                     <h4 className="font-medium mb-1">Google (Gemini models)</h4>

@@ -28,7 +28,7 @@ const Settings = () => {
     contextWindow,
     setContextWindow
   } = useConfig();
-  const { resetChat, chatHistory } = useChat();
+  const { createNewChat, chatHistory } = useChat();
   
   // Local state for showing API key
   const [showApiKey, setShowApiKey] = useState(false);
@@ -40,7 +40,7 @@ const Settings = () => {
   const handleClearChatHistory = () => {
     if (window.confirm('Are you sure you want to clear all chat history? This action cannot be undone.')) {
       localStorage.removeItem('chatHistory');
-      resetChat();
+      createNewChat();
       navigate('/');
     }
   };
@@ -114,7 +114,7 @@ const Settings = () => {
                         </Button>
                         <Button
                           variant="outline"
-                          onClick={resetChat}
+                          onClick={createNewChat}
                         >
                           <ArrowPathIcon className="h-4 w-4 mr-2" />
                           New Chat
@@ -298,7 +298,10 @@ const models = [
   { id: 'claude-3-sonnet', name: 'Claude 3 Sonnet', provider: 'Anthropic', description: 'Balanced performance and efficiency' },
   { id: 'gemini-pro', name: 'Gemini Pro', provider: 'Google', description: 'Google\'s advanced reasoning model' },
   { id: 'grok-1', name: 'Grok-1', provider: 'xAI', description: 'Real-time knowledge and code analysis' },
-  { id: 'cohere', name: 'Cohere', provider: 'CohereAI', description: 'Chat with Cohere' }
+  { id: 'cohere-command', name: 'Cohere Command', provider: 'CohereAI', description: 'Flagship model for comprehensive security analysis' },
+  { id: 'cohere-command-light', name: 'Cohere Command Light', provider: 'CohereAI', description: 'Faster, more efficient security assessment' },
+  { id: 'cohere-command-r', name: 'Cohere Command-R', provider: 'CohereAI', description: 'Enhanced for security research and retrieval' },
+  { id: 'cohere-command-r-plus', name: 'Cohere Command-R+', provider: 'CohereAI', description: 'Advanced reasoning for complex security tasks' }
 ];
 
 export default Settings;

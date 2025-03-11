@@ -13,11 +13,13 @@ import {
 import { useTheme } from '../../context/ThemeContext';
 import ConfigPanel from '../sidebar/ConfigPanel';
 import ChatHistory from '../sidebar/ChatHistory';
+import { useChat } from '../../hooks/useChat'; // Add this import
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const location = useLocation();
   const { darkMode } = useTheme();
   const [activeTab, setActiveTab] = useState('chats');
+  const { createNewChat } = useChat(); // Add this to get the createNewChat function
   
   // Navigation items
   const navItems = [
@@ -101,13 +103,14 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           <div className="flex-1 overflow-y-auto">
             {activeTab === 'chats' ? (
               <div className="p-4">
-                {/* New chat button */}
+                {/* New chat button - Add onClick handler to call createNewChat */}
                 <button
                   className={`flex items-center w-full p-3 rounded-lg mb-4 ${
                     darkMode
                       ? 'bg-primary-900 hover:bg-primary-800 text-white'
                       : 'bg-primary-50 hover:bg-primary-100 text-primary-700'
                   } transition-colors`}
+                  onClick={createNewChat}
                 >
                   <PlusCircleIcon className="h-5 w-5 mr-2" />
                   <span>New Chat</span>

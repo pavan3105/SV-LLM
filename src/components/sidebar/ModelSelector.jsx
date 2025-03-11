@@ -11,7 +11,11 @@ const models = [
   { id: 'claude-3-sonnet', name: 'Claude 3 Sonnet', provider: 'Anthropic', description: 'Balanced performance and efficiency' },
   { id: 'gemini-pro', name: 'Gemini Pro', provider: 'Google', description: 'Google\'s advanced reasoning model' },
   { id: 'grok-1', name: 'Grok-1', provider: 'xAI', description: 'Real-time knowledge and witty responses' },
-  { id: 'cohere', name: 'Cohere', provider: 'CohereAI', description: 'Chat with Cohere' }
+  { id: 'cohere', name: 'Cohere', provider: 'CohereAI', description: 'Chat with Cohere' },
+  { id: 'cohere-command', name: 'Command', provider: 'CohereAI', description: 'Flagship model for complex reasoning' },
+  { id: 'cohere-command-light', name: 'Command Light', provider: 'CohereAI', description: 'Faster, more efficient alternative' },
+  { id: 'cohere-command-r', name: 'Command-R', provider: 'CohereAI', description: 'Specialized for retrieval and RAG' },
+  { id: 'cohere-command-r-plus', name: 'Command-R+', provider: 'CohereAI', description: 'Enhanced retrieval and reasoning' }
 ];
 
 const ModelSelector = ({ selectedModel, onSelectModel }) => {

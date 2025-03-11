@@ -71,6 +71,18 @@ export const getErrorMessage = (error) => {
         
       case 'xai':
         return `xAI API error: ${baseMessage}`;
+
+      case 'cohere':
+          if (error.response?.status === 401) {
+            return 'Invalid Cohere API key. Please check your credentials.';
+          }
+          if (error.response?.status === 429) {
+            return 'Cohere rate limit exceeded. Please try again later.';
+          }
+          if (error.response?.data?.message) {
+            return `Cohere API error: ${error.response.data.message}`;
+          }
+          return `Cohere API error: ${baseMessage}`;
         
       default:
         return baseMessage;

@@ -40,6 +40,13 @@ export const MODELS = {
   XAI: {
     GROK_1: 'grok-1',
   },
+
+  COHERE: {
+    COMMAND: 'cohere-command',
+    COMMAND_LIGHT: 'cohere-command-light',
+    COMMAND_R: 'cohere-command-r',
+    COMMAND_R_PLUS: 'cohere-command-r-plus',
+  },
 };
 
 // Default model settings
@@ -73,6 +80,7 @@ export const API_ENDPOINTS = {
   ANTHROPIC: 'https://api.anthropic.com/v1/messages',
   GOOGLE: 'https://generativelanguage.googleapis.com/v1beta/models',
   XAI: 'https://api.xai.com/v1/chat/completions',
+  COHERE: 'https://api.cohere.ai/v1/chat',
 };
 
 // Regex patterns

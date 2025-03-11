@@ -11,7 +11,7 @@ import { useChat } from '../../hooks/useChat';
 
 const Header = ({ toggleSidebar, toggleInfoPanel, sidebarOpen, infoPanelOpen }) => {
   const { darkMode, toggleDarkMode } = useTheme();
-  const { resetChat } = useChat();
+  const { createNewChat } = useChat(); // Changed from resetChat to createNewChat
 
   return (
     <header className={`shrink-0 border-b ${
@@ -43,7 +43,7 @@ const Header = ({ toggleSidebar, toggleInfoPanel, sidebarOpen, infoPanelOpen }) 
         
         {/* Right section: Actions */}
         <div className="flex items-center space-x-2">
-          {/* New chat button */}
+          {/* New chat button - Use createNewChat instead of resetChat */}
           <button
             type="button"
             className={`p-2 rounded-md ${
@@ -51,7 +51,7 @@ const Header = ({ toggleSidebar, toggleInfoPanel, sidebarOpen, infoPanelOpen }) 
                 ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700' 
                 : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
             }`}
-            onClick={resetChat}
+            onClick={createNewChat}
           >
             <ArrowPathIcon className="h-5 w-5" />
             <span className="sr-only">New chat</span>
