@@ -42,7 +42,7 @@ const ChatWindow = ({
           <div className="h-full flex flex-col items-center justify-center p-6 text-center">
             <h2 className="text-2xl font-bold mb-3">Welcome to SV-LLM</h2>
             <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-md">
-              Your security-focused AI assistant for threat modeling, bug detection, and security verification.
+              Your security-focused AI assistant.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl w-full">
               {suggestedPrompts.map((prompt, index) => (
