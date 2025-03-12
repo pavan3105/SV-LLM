@@ -16,6 +16,7 @@ import Tooltip from '../components/common/Tooltip';
 import { useTheme } from '../context/ThemeContext';
 import { useConfig } from '../context/ConfigContext';
 import { useChat } from '../hooks/useChat';
+import { clearAllChats } from '../services/storageService';
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -39,9 +40,11 @@ const Settings = () => {
   // Handle clear chat history
   const handleClearChatHistory = () => {
     if (window.confirm('Are you sure you want to clear all chat history? This action cannot be undone.')) {
-      localStorage.removeItem('chatHistory');
-      createNewChat();
-      navigate('/');
+      // Clear chat history from localStorage
+      clearAllChats();
+      
+      // Force page reload to reset state completely
+      window.location.reload();
     }
   };
   
@@ -114,7 +117,10 @@ const Settings = () => {
                         </Button>
                         <Button
                           variant="outline"
-                          onClick={createNewChat}
+                          onClick={() => {
+                            createNewChat();
+                            navigate('/');
+                          }}
                         >
                           <ArrowPathIcon className="h-4 w-4 mr-2" />
                           New Chat
