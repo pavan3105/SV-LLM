@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   ChatBubbleLeftRightIcon, 
   Cog6ToothIcon,
@@ -13,13 +13,20 @@ import {
 import { useTheme } from '../../context/ThemeContext';
 import ConfigPanel from '../sidebar/ConfigPanel';
 import ChatHistory from '../sidebar/ChatHistory';
-import { useChat } from '../../hooks/useChat'; // Add this import
+import { useChat } from '../../hooks/useChat';
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { darkMode } = useTheme();
   const [activeTab, setActiveTab] = useState('chats');
-  const { createNewChat } = useChat(); // Add this to get the createNewChat function
+  const { createNewChat } = useChat();
+  
+  // Handle new chat creation
+  const handleNewChat = () => {
+    createNewChat();
+    navigate('/'); // Navigate to home page
+  };
   
   // Navigation items
   const navItems = [
@@ -41,14 +48,14 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       {/* Sidebar */}
       <aside 
         className={`fixed z-50 md:relative inset-y-0 left-0 flex flex-col flex-shrink-0 w-72 max-w-full transition-transform duration-300 ease-in-out transform ${
-          isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+          isOpen ? 'translate-x-0' : '-translate-x-full'
         } ${darkMode ? 'bg-dark-200 text-white' : 'bg-white text-gray-900'} border-r ${
           darkMode ? 'border-gray-700' : 'border-gray-200'
         } md:shadow-none md:z-auto shadow-xl`}
       >
         {/* Sidebar header */}
-        <div className="flex items-center justify-between h-16 px-4 border-b shrink-0 md:justify-center relative
-          ${darkMode ? 'border-gray-700' : 'border-gray-200'}">
+        <div className={`flex items-center justify-between h-16 px-4 border-b shrink-0 md:justify-center relative
+          ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
           <div className="flex items-center">
             <ShieldCheckIcon className="h-8 w-8 text-primary-600" />
             <h1 className="ml-2 text-xl font-bold">SV-LLM</h1>
@@ -76,7 +83,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         {/* Sidebar content */}
         <div className="flex flex-col flex-1 overflow-hidden">
           {/* Tabs */}
-          <div className="flex border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}">
+          <div className={`flex border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
             <button
               className={`flex-1 py-3 text-sm font-medium ${
                 activeTab === 'chats'
@@ -110,7 +117,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                       ? 'bg-primary-900 hover:bg-primary-800 text-white'
                       : 'bg-primary-50 hover:bg-primary-100 text-primary-700'
                   } transition-colors`}
-                  onClick={createNewChat}
+                  onClick={handleNewChat}
                 >
                   <PlusCircleIcon className="h-5 w-5 mr-2" />
                   <span>New Chat</span>

@@ -10,15 +10,24 @@ const FEEDBACK_STORAGE_KEY = 'sv-llm-feedback';
  */
 export const sendFeedback = async (feedback) => {
   try {
+    // Add timestamp if not present
+    const enhancedFeedback = {
+      ...feedback,
+      timestamp: feedback.timestamp || new Date().toISOString()
+    };
+
     // Since we're not implementing a real backend yet,
     // we'll store the feedback locally
-    storeFeedbackLocally(feedback);
+    storeFeedbackLocally(enhancedFeedback);
     
     // In a production app, you would send to an API endpoint:
-    // return api.post('/feedback', feedback);
+    // return api.post('/feedback', enhancedFeedback);
     
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Log the feedback for debugging
+    console.log('Feedback submitted:', enhancedFeedback);
     
     return { success: true, message: 'Feedback recorded' };
   } catch (error) {
@@ -56,6 +65,29 @@ export const getStoredFeedback = () => {
   } catch (error) {
     console.error('Error getting stored feedback:', error);
     return [];
+  }
+};
+
+/**
+ * Get feedback statistics
+ * @returns {Object} - Counts of each reaction type
+ */
+export const getFeedbackStats = () => {
+  try {
+    const feedback = getStoredFeedback();
+    
+    // Count reactions
+    const stats = feedback.reduce((acc, item) => {
+      if (item.reaction) {
+        acc[item.reaction] = (acc[item.reaction] || 0) + 1;
+      }
+      return acc;
+    }, {});
+    
+    return stats;
+  } catch (error) {
+    console.error('Error calculating feedback stats:', error);
+    return {};
   }
 };
 

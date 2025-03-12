@@ -43,6 +43,14 @@ const ChatHistory = () => {
     return <ChatBubbleLeftRightIcon className="h-5 w-5 flex-shrink-0" />;
   };
 
+  // Handle chat selection and navigation
+  const handleSelectChat = (chatId) => {
+    // First select the chat in the context
+    selectChat(chatId);
+    // Then navigate to the home page to show the chat
+    navigate('/');
+  };
+
   return (
     <div className="space-y-2">
       <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-3">
@@ -65,7 +73,7 @@ const ChatHistory = () => {
                     ? 'text-gray-300 hover:bg-gray-800' 
                     : 'text-gray-700 hover:bg-gray-50'
               }`}
-              onClick={() => selectChat(chat.id)}
+              onClick={() => handleSelectChat(chat.id)}
             >
               <div className="flex items-start space-x-3 min-w-0">
                 <div className={`mt-0.5 ${

@@ -131,3 +131,76 @@ input[type="range"]::-moz-range-thumb {
 .hljs-tag {
   @apply text-gray-600 dark:text-gray-300;
 }
+
+.emoji-reaction {
+  position: relative;
+  display: inline-block;
+}
+
+.emoji-reaction .tooltip {
+  visibility: hidden;
+  min-width: 120px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 0.75rem;
+}
+
+.emoji-reaction .tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #333 transparent transparent transparent;
+}
+
+.emoji-reaction:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Emoji button hover and selection effects */
+.emoji-btn {
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.emoji-btn:hover {
+  transform: scale(1.2);
+}
+
+.emoji-btn.selected {
+  transform: scale(1.25);
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+.dark .emoji-btn.selected {
+  background-color: rgba(59, 130, 246, 0.2);
+}
+
+/* Animation for thank you message */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.feedback-thank-you {
+  animation: fadeInUp 0.3s ease forwards;
+}
