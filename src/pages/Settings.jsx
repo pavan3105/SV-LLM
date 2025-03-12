@@ -40,11 +40,20 @@ const Settings = () => {
   // Handle clear chat history
   const handleClearChatHistory = () => {
     if (window.confirm('Are you sure you want to clear all chat history? This action cannot be undone.')) {
-      // Clear chat history from localStorage
-      clearAllChats();
-      
-      // Force page reload to reset state completely
-      window.location.reload();
+      try {
+        // Clear chat history from localStorage
+        clearAllChats();
+        
+        // Instead of reloading the page, navigate to home and create a new chat
+        createNewChat();
+        navigate('/', { replace: true });
+        
+        // Show success message
+        alert('Chat history has been cleared successfully');
+      } catch (error) {
+        console.error('Error clearing chat history:', error);
+        alert('There was an error clearing chat history. Please try again.');
+      }
     }
   };
   

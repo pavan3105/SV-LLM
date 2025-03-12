@@ -31,6 +31,11 @@ export const ChatProvider = ({ children }) => {
 
   // Load chat history on initial mount
   useEffect(() => {
+    refreshChatHistory();
+  }, []);
+
+  // Refresh chat history from storage
+  const refreshChatHistory = () => {
     const history = loadChatHistory();
     setChatHistory(history);
     
@@ -42,7 +47,7 @@ export const ChatProvider = ({ children }) => {
       // Create a new chat
       createNewChat();
     }
-  }, []);
+  };
 
   // Create a new chat
   const createNewChat = () => {
@@ -199,7 +204,8 @@ export const ChatProvider = ({ children }) => {
     activeChat,
     createNewChat,
     selectChat,
-    deleteChat
+    deleteChat,
+    refreshChatHistory
   };
 
   return (
