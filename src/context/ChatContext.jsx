@@ -34,7 +34,7 @@ export const ChatProvider = ({ children }) => {
     refreshChatHistory();
   }, []);
 
-  // Refresh chat history from storage
+  // Refresh chat history from storage - enhanced to properly reset state
   const refreshChatHistory = () => {
     const history = loadChatHistory();
     setChatHistory(history);
@@ -44,6 +44,9 @@ export const ChatProvider = ({ children }) => {
       setActiveChat(history[0]);
       setMessages(history[0].messages || []);
     } else {
+      // If no chats exist, reset active chat and messages
+      setActiveChat(null);
+      setMessages([]);
       // Create a new chat
       createNewChat();
     }
@@ -59,10 +62,14 @@ export const ChatProvider = ({ children }) => {
       messages: []
     };
     
-    setChatHistory(prev => [newChat, ...prev]);
+    // Update chat history with the new chat at the beginning
+    const updatedHistory = [newChat, ...chatHistory];
+    setChatHistory(updatedHistory);
     setActiveChat(newChat);
     setMessages([]);
-    storeChatHistory([newChat, ...chatHistory]);
+    
+    // Store the updated history in localStorage
+    storeChatHistory(updatedHistory);
     
     return newChat;
   };
@@ -205,7 +212,7 @@ export const ChatProvider = ({ children }) => {
     createNewChat,
     selectChat,
     deleteChat,
-    refreshChatHistory
+    refreshChatHistory // Expose this method so it can be called from elsewhere
   };
 
   return (

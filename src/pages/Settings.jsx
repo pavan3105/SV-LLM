@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Cog6ToothIcon, 
   KeyIcon, 
-  TrashIcon, 
   ArrowPathIcon,
   ShieldCheckIcon,
   ServerIcon,
@@ -16,7 +15,6 @@ import Tooltip from '../components/common/Tooltip';
 import { useTheme } from '../context/ThemeContext';
 import { useConfig } from '../context/ConfigContext';
 import { useChat } from '../hooks/useChat';
-import { clearAllChats } from '../services/storageService';
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -36,26 +34,6 @@ const Settings = () => {
   
   // Active section
   const [activeSection, setActiveSection] = useState('general');
-  
-  // Handle clear chat history
-  const handleClearChatHistory = () => {
-    if (window.confirm('Are you sure you want to clear all chat history? This action cannot be undone.')) {
-      try {
-        // Clear chat history from localStorage
-        clearAllChats();
-        
-        // Instead of reloading the page, navigate to home and create a new chat
-        createNewChat();
-        navigate('/', { replace: true });
-        
-        // Show success message
-        alert('Chat history has been cleared successfully');
-      } catch (error) {
-        console.error('Error clearing chat history:', error);
-        alert('There was an error clearing chat history. Please try again.');
-      }
-    }
-  };
   
   // Sections
   const sections = [
@@ -117,13 +95,7 @@ const Settings = () => {
                       </p>
                       
                       <div className="flex space-x-3">
-                        <Button
-                          variant="danger"
-                          onClick={handleClearChatHistory}
-                        >
-                          <TrashIcon className="h-4 w-4 mr-2" />
-                          Clear All History
-                        </Button>
+                        {/* New Chat button only (Clear All button removed) */}
                         <Button
                           variant="outline"
                           onClick={() => {
