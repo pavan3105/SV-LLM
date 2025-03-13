@@ -28,10 +28,9 @@ export const sendMessageToLLM = async ({ messages, model, apiKey }) => {
     return sendToGoogle({ messages: enhancedMessages, model, apiKey });
   } else if (model.startsWith('grok')) {
     return sendToXAI({ messages: enhancedMessages, model, apiKey });
-  }else if (model.startsWith('cohere') || model === 'cohere') {
+  } else if (model.startsWith('cohere') || model === 'cohere') {
     return sendToCohere({ messages: enhancedMessages, model, apiKey });
-  }
-   else {
+  } else {
     throw new Error(`Unsupported model: ${model}`);
   }
 };
@@ -173,48 +172,60 @@ const sendToXAI = async ({ messages, model, apiKey }) => {
  */
 const sendToCohere = async ({ messages, model, apiKey }) => {
   try {
-    // Convert messages to Cohere format
-    // Cohere uses a chat history format with separate User/Chatbot messages
-    const chatHistory = [];
+    // Extract the current user query (last message)
+    const lastUserMessage = messages.filter(msg => msg.role === 'user').pop();
     
-    // Process all messages except the most recent user message
-    for (let i = 0; i < messages.length - 1; i++) {
-      const msg = messages[i];
+    if (!lastUserMessage) {
+      throw new Error('No user message found');
+    }
+    
+    // Format chat history (excluding system message and the last user message)
+    const chatHistory = [];
+    let systemMessage = '';
+    
+    // Process all messages to build chat history
+    for (const msg of messages) {
       if (msg.role === 'system') {
-        // Skip system message for chat history, but we'll use it as preamble later
-        continue;
-      } else if (msg.role === 'user') {
+        systemMessage = msg.content;
+      } else if (msg.role === 'user' && msg !== lastUserMessage) {
+        // Add previous user messages
         chatHistory.push({
-          role: 'User',
+          role: 'USER',
           message: msg.content
         });
       } else if (msg.role === 'assistant') {
+        // Add assistant messages
         chatHistory.push({
-          role: 'Chatbot',
+          role: 'CHATBOT',
           message: msg.content
         });
       }
     }
     
-    // Get the last user message (the current query)
-    const lastMessage = messages[messages.length - 1];
-    
-    // Get the system message to use as preamble
-    const systemMessage = messages.find(msg => msg.role === 'system')?.content || '';
-    
     // Determine which Cohere model to use
     const cohereModel = model === 'cohere' ? 'command' : model.replace('cohere-', '');
     
+    // Prepare the request payload
+    const payload = {
+      model: cohereModel,
+      message: lastUserMessage.content,
+      temperature: 0.7,
+    };
+    
+    // Only add chat history if we have previous messages
+    if (chatHistory.length > 0) {
+      payload.chat_history = chatHistory;
+    }
+    
+    // Add preamble if we have a system message
+    if (systemMessage) {
+      payload.preamble = systemMessage;
+    }
+    
+    // Send request to Cohere API
     const response = await axios.post(
       'https://api.cohere.ai/v1/chat',
-      {
-        model: cohereModel,
-        message: lastMessage.content,
-        chat_history: chatHistory,
-        preamble: systemMessage,
-        temperature: 0.7,
-        connectors: [{ id: "web-search" }]
-      },
+      payload,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -224,12 +235,29 @@ const sendToCohere = async ({ messages, model, apiKey }) => {
       }
     );
     
+    // Return formatted response
     return {
       role: 'assistant',
       content: response.data.text
     };
   } catch (error) {
     console.error('Cohere API error:', error);
-    throw new Error(error.response?.data?.message || 'Error communicating with Cohere');
+    
+    // Enhanced error handling with more details
+    let errorMessage = 'Error communicating with Cohere';
+    
+    if (error.response) {
+      // The request was made and the server responded with a non-2xx status
+      errorMessage = error.response.data?.message || `Cohere API error: ${error.response.status}`;
+      console.error('Cohere API response data:', error.response.data);
+    } else if (error.request) {
+      // The request was made but no response was received
+      errorMessage = 'No response received from Cohere API';
+    } else {
+      // Something happened in setting up the request
+      errorMessage = error.message || 'Unknown error with Cohere API request';
+    }
+    
+    throw new Error(errorMessage);
   }
 };
