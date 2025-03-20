@@ -30,21 +30,21 @@ export const loadChatHistory = () => {
  */
 export const storeChat = (chat) => {
   try {
-    // Get existing history
+    
     const history = loadChatHistory();
     
-    // Check if chat already exists in history
+   
     const index = history.findIndex(c => c.id === chat.id);
     
     if (index >= 0) {
-      // Update existing chat
+     
       history[index] = chat;
     } else {
-      // Add new chat to the beginning
+      
       history.unshift(chat);
     }
     
-    // Save updated history
+    
     storeChatHistory(history);
   } catch (error) {
     console.error('Error storing chat:', error);
@@ -57,13 +57,9 @@ export const storeChat = (chat) => {
  */
 export const deleteChat = (chatId) => {
   try {
-    // Get existing history
+    
     const history = loadChatHistory();
-    
-    // Filter out the chat to delete
     const updatedHistory = history.filter(chat => chat.id !== chatId);
-    
-    // Save updated history
     storeChatHistory(updatedHistory);
   } catch (error) {
     console.error('Error deleting chat:', error);
@@ -76,11 +72,10 @@ export const deleteChat = (chatId) => {
 export const clearAllChats = () => {
   try {
     localStorage.removeItem('chatHistory');
-    // Return an empty array to make it clear this operation succeeded
     return [];
   } catch (error) {
     console.error('Error clearing chat history:', error);
-    throw error; // Re-throw the error so it can be caught by the caller
+    throw error; 
   }
 };
 

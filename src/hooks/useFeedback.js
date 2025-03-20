@@ -24,14 +24,14 @@ export const useFeedback = () => {
       ...feedback
     };
     
-    // Add to pending
+    
     setPending(prev => [...prev, feedbackData]);
     
     try {
-      // Send feedback to service
+     
       await sendFeedback(feedbackData);
       
-      // Move from pending to submitted
+     
       setPending(prev => prev.filter(item => item.id !== feedbackId));
       setSubmitted(prev => [...prev, feedbackData]);
       

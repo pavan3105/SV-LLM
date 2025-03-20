@@ -29,13 +29,10 @@ const Settings = () => {
   } = useConfig();
   const { createNewChat, chatHistory } = useChat();
   
-  // Local state for showing API key
   const [showApiKey, setShowApiKey] = useState(false);
   
-  // Active section
   const [activeSection, setActiveSection] = useState('general');
-  
-  // Sections
+
   const sections = [
     { id: 'general', name: 'General', icon: Cog6ToothIcon },
     { id: 'api', name: 'API Settings', icon: KeyIcon },
@@ -277,9 +274,9 @@ const Settings = () => {
   );
 };
 
-// Available models
+
 const models = [
-  { id: 'gpt-4', name: 'GPT-4', provider: 'OpenAI', description: 'Most capable GPT model for complex security tasks' },
+  { id: 'gpt-4o-2024-11-20', name: 'GPT-4', provider: 'OpenAI', description: 'Most capable GPT model for complex security tasks' },
   { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo', provider: 'OpenAI', description: 'Fast and cost-effective for most security tasks' },
   { id: 'claude-3-opus', name: 'Claude 3 Opus', provider: 'Anthropic', description: 'Most powerful Claude model for complex security tasks' },
   { id: 'claude-3-sonnet', name: 'Claude 3 Sonnet', provider: 'Anthropic', description: 'Balanced performance and efficiency' },

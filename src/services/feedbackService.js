@@ -10,23 +10,14 @@ const FEEDBACK_STORAGE_KEY = 'sv-llm-feedback';
  */
 export const sendFeedback = async (feedback) => {
   try {
-    // Add timestamp if not present
+    
     const enhancedFeedback = {
       ...feedback,
       timestamp: feedback.timestamp || new Date().toISOString()
     };
-
-    // Since we're not implementing a real backend yet,
-    // we'll store the feedback locally
     storeFeedbackLocally(enhancedFeedback);
-    
-    // In a production app, you would send to an API endpoint:
-    // return api.post('/feedback', enhancedFeedback);
-    
-    // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 500));
     
-    // Log the feedback for debugging
     console.log('Feedback submitted:', enhancedFeedback);
     
     return { success: true, message: 'Feedback recorded' };
@@ -42,13 +33,11 @@ export const sendFeedback = async (feedback) => {
  */
 const storeFeedbackLocally = (feedback) => {
   try {
-    // Get existing feedback
+   
     const existingFeedback = JSON.parse(localStorage.getItem(FEEDBACK_STORAGE_KEY) || '[]');
     
-    // Add new feedback
-    existingFeedback.push(feedback);
     
-    // Save back to localStorage
+    existingFeedback.push(feedback);
     localStorage.setItem(FEEDBACK_STORAGE_KEY, JSON.stringify(existingFeedback));
   } catch (error) {
     console.error('Error storing feedback locally:', error);
@@ -76,7 +65,6 @@ export const getFeedbackStats = () => {
   try {
     const feedback = getStoredFeedback();
     
-    // Count reactions
     const stats = feedback.reduce((acc, item) => {
       if (item.reaction) {
         acc[item.reaction] = (acc[item.reaction] || 0) + 1;

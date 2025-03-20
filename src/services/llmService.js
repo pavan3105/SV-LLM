@@ -9,8 +9,7 @@ import axios from 'axios';
  * @returns {Promise<Object>} - Response from the API
  */
 export const sendMessageToLLM = async ({ messages, model, apiKey }) => {
-  // Include a system message that instructs the model to focus on security aspects
-  // This will be processed by the backend orchestrator to determine the appropriate agent
+  
   const enhancedMessages = [
     {
       role: 'system',
@@ -70,7 +69,7 @@ const sendToOpenAI = async ({ messages, model, apiKey }) => {
  */
 const sendToAnthropic = async ({ messages, model, apiKey }) => {
   try {
-    // Convert messages to Anthropic format
+   
     const formattedMessages = messages.map(msg => ({
       role: msg.role === 'assistant' ? 'assistant' : 'user',
       content: msg.content
@@ -172,29 +171,27 @@ const sendToXAI = async ({ messages, model, apiKey }) => {
  */
 const sendToCohere = async ({ messages, model, apiKey }) => {
   try {
-    // Extract the current user query (last message)
+    
     const lastUserMessage = messages.filter(msg => msg.role === 'user').pop();
     
     if (!lastUserMessage) {
       throw new Error('No user message found');
     }
-    
-    // Format chat history (excluding system message and the last user message)
     const chatHistory = [];
     let systemMessage = '';
     
-    // Process all messages to build chat history
+   
     for (const msg of messages) {
       if (msg.role === 'system') {
         systemMessage = msg.content;
       } else if (msg.role === 'user' && msg !== lastUserMessage) {
-        // Add previous user messages
+        
         chatHistory.push({
           role: 'USER',
           message: msg.content
         });
       } else if (msg.role === 'assistant') {
-        // Add assistant messages
+       
         chatHistory.push({
           role: 'CHATBOT',
           message: msg.content
@@ -202,27 +199,27 @@ const sendToCohere = async ({ messages, model, apiKey }) => {
       }
     }
     
-    // Determine which Cohere model to use
+   
     const cohereModel = model === 'cohere' ? 'command' : model.replace('cohere-', '');
     
-    // Prepare the request payload
+   
     const payload = {
       model: cohereModel,
       message: lastUserMessage.content,
       temperature: 0.7,
     };
     
-    // Only add chat history if we have previous messages
+    
     if (chatHistory.length > 0) {
       payload.chat_history = chatHistory;
     }
     
-    // Add preamble if we have a system message
+   
     if (systemMessage) {
       payload.preamble = systemMessage;
     }
     
-    // Send request to Cohere API
+   
     const response = await axios.post(
       'https://api.cohere.ai/v1/chat',
       payload,
@@ -235,7 +232,7 @@ const sendToCohere = async ({ messages, model, apiKey }) => {
       }
     );
     
-    // Return formatted response
+   
     return {
       role: 'assistant',
       content: response.data.text
@@ -243,18 +240,18 @@ const sendToCohere = async ({ messages, model, apiKey }) => {
   } catch (error) {
     console.error('Cohere API error:', error);
     
-    // Enhanced error handling with more details
+    
     let errorMessage = 'Error communicating with Cohere';
     
     if (error.response) {
-      // The request was made and the server responded with a non-2xx status
+      
       errorMessage = error.response.data?.message || `Cohere API error: ${error.response.status}`;
       console.error('Cohere API response data:', error.response.data);
     } else if (error.request) {
-      // The request was made but no response was received
+      
       errorMessage = 'No response received from Cohere API';
     } else {
-      // Something happened in setting up the request
+      
       errorMessage = error.message || 'Unknown error with Cohere API request';
     }
     

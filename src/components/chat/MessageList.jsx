@@ -6,15 +6,15 @@ import { useTheme } from '../../context/ThemeContext';
 const MessageList = ({ messages, onProvideFeedback }) => {
   const { darkMode } = useTheme();
   
-  // Group consecutive messages from the same sender
+  
   const groupedMessages = messages.reduce((acc, message, index) => {
     const prevMessage = index > 0 ? messages[index - 1] : null;
     
-    // Start a new group if no previous message or different sender
+   
     if (!prevMessage || prevMessage.role !== message.role) {
       acc.push([message]);
     } else {
-      // Add to the last group
+      
       acc[acc.length - 1].push(message);
     }
     

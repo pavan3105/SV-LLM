@@ -14,9 +14,7 @@ export const useApiCall = (apiFunction, options = {}) => {
   const [error, setError] = useState(null);
   const [called, setCalled] = useState(false);
   
-  /**
-   * Reset the state
-   */
+  
   const reset = useCallback(() => {
     setData(null);
     setLoading(false);

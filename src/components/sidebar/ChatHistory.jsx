@@ -17,7 +17,6 @@ const ChatHistory = () => {
   const navigate = useNavigate();
   const { chatHistory, activeChat, selectChat, deleteChat } = useChat();
 
-  // No chat history placeholder
   if (chatHistory.length === 0) {
     return (
       <div className={`p-6 text-center rounded-lg border ${
@@ -30,7 +29,6 @@ const ChatHistory = () => {
     );
   }
 
-  // Select a chat icon based on the title/content
   const getChatIcon = (title) => {
     title = title.toLowerCase();
     if (title.includes('threat') || title.includes('security') || title.includes('vulnerability')) {
@@ -43,11 +41,10 @@ const ChatHistory = () => {
     return <ChatBubbleLeftRightIcon className="h-5 w-5 flex-shrink-0" />;
   };
 
-  // Handle chat selection and navigation
+ 
   const handleSelectChat = (chatId) => {
-    // First select the chat in the context
+   
     selectChat(chatId);
-    // Then navigate to the home page to show the chat
     navigate('/');
   };
 

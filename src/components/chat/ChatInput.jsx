@@ -6,7 +6,7 @@ const ChatInput = ({ onSubmit, isLoading, value, onChange }) => {
   const { darkMode } = useTheme();
   const textareaRef = useRef(null);
 
-  // Adjust textarea height based on content
+  
   useEffect(() => {
     const textarea = textareaRef.current;
     if (textarea) {
@@ -16,12 +16,12 @@ const ChatInput = ({ onSubmit, isLoading, value, onChange }) => {
     }
   }, [value]);
 
-  // Focus the input when it mounts
+
   useEffect(() => {
     textareaRef.current?.focus();
   }, []);
 
-  // Handle form submission
+  
   const handleSubmit = (e) => {
     e.preventDefault();
     if (value.trim() !== '' && !isLoading) {
@@ -29,14 +29,14 @@ const ChatInput = ({ onSubmit, isLoading, value, onChange }) => {
     }
   };
 
-  // Handle key press (Ctrl+Enter or Command+Enter to submit)
+  
   const handleKeyDown = (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
       handleSubmit(e);
     }
   };
 
-  // Clear the input
+  
   const handleClear = () => {
     onChange('');
     textareaRef.current?.focus();

@@ -15,7 +15,7 @@ const ChatWindow = ({
   const messagesEndRef = useRef(null);
   const [prompt, setPrompt] = useState('');
 
-  // Scroll to bottom whenever messages change
+  
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
@@ -24,14 +24,14 @@ const ChatWindow = ({
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Handle submitting a new message
+  
   const handleSubmit = (text) => {
     if (text.trim() === '') return;
     onSendMessage(text);
     setPrompt('');
   };
 
-  // Welcome message if no messages yet
+  
   const emptyState = messages.length === 0 && !isLoading;
 
   return (
@@ -91,7 +91,7 @@ const ChatWindow = ({
   );
 };
 
-// Suggested prompts for empty state
+
 const suggestedPrompts = [
   {
     title: "Security Analysis",

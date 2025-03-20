@@ -5,28 +5,28 @@ const ContextWindowSlider = ({ value, onChange, min, max, step }) => {
   const { darkMode } = useTheme();
   const [localValue, setLocalValue] = useState(value);
   
-  // Update local value when prop value changes
+  
   useEffect(() => {
     setLocalValue(value);
   }, [value]);
   
-  // Handle slider change
+  
   const handleSliderChange = (e) => {
     const newValue = parseInt(e.target.value, 10);
     setLocalValue(newValue);
   };
   
-  // Update parent state on slider release
+ 
   const handleSliderRelease = () => {
     onChange(localValue);
   };
   
-  // Format tokens as K (thousands)
+  
   const formatTokens = (tokens) => {
     return `${tokens >= 1000 ? tokens / 1000 : tokens}${tokens >= 1000 ? 'K' : ''}`;
   };
   
-  // Calculate percentage for slider background
+  
   const percentage = ((localValue - min) / (max - min)) * 100;
 
   return (
