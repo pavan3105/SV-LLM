@@ -5,7 +5,7 @@ import { useTheme } from '../../context/ThemeContext';
 
 // Available models
 const models = [
-  { id: 'gpt-4', name: 'GPT-4', provider: 'OpenAI', description: 'Most capable GPT model for complex tasks' },
+  { id: 'gpt-4o-2024-11-20', name: 'GPT-4', provider: 'OpenAI', description: 'Most capable GPT model for complex tasks' },
   { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo', provider: 'OpenAI', description: 'Fast and cost-effective for most tasks' },
   { id: 'claude-3-opus', name: 'Claude 3 Opus', provider: 'Anthropic', description: 'Most powerful Claude model for complex tasks' },
   { id: 'claude-3-sonnet', name: 'Claude 3 Sonnet', provider: 'Anthropic', description: 'Balanced performance and efficiency' },
