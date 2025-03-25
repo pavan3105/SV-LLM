@@ -11,6 +11,14 @@ const models = [
   { id: 'claude-3-sonnet', name: 'Claude 3 Sonnet', provider: 'Anthropic', description: 'Balanced performance and efficiency' },
   { id: 'gemini-pro', name: 'Gemini Pro', provider: 'Google', description: 'Google\'s advanced reasoning model' },
   { id: 'grok-1', name: 'Grok-1', provider: 'xAI', description: 'Real-time knowledge and witty responses' },
+  
+  // New Mistral models
+  { id: 'mistral-small-latest', name: 'Mistral Small', provider: 'Mistral AI', description: 'Small model with image understanding (v3.1, March 2025)' },
+  { id: 'pixtral-12b-2409', name: 'Pixtral', provider: 'Mistral AI', description: '12B model with image and text understanding capabilities' },
+  { id: 'open-mistral-nemo', name: 'Mistral Nemo', provider: 'Mistral AI', description: 'Best multilingual open source model (July 2024)' },
+  { id: 'open-codestral-mamba', name: 'Codestral Mamba', provider: 'Mistral AI', description: 'Mamba 2 model for code (256k context)' },
+  //{ id: 'mathstral', name: 'Mathstral', provider: 'Mistral AI', description: 'Specialized model for mathematics' },
+  
   { id: 'cohere', name: 'Cohere', provider: 'CohereAI', description: 'Chat with Cohere' },
   { id: 'cohere-command', name: 'Command', provider: 'CohereAI', description: 'Flagship model for complex reasoning' },
   { id: 'cohere-command-light', name: 'Command Light', provider: 'CohereAI', description: 'Faster, more efficient alternative' },

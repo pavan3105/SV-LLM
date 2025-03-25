@@ -41,11 +41,21 @@ export const MODELS = {
     GROK_1: 'grok-1',
   },
 
+  // Cohere models
   COHERE: {
     COMMAND: 'cohere-command',
     COMMAND_LIGHT: 'cohere-command-light',
     COMMAND_R: 'cohere-command-r',
     COMMAND_R_PLUS: 'cohere-command-r-plus',
+  },
+  
+  // New Mistral models
+  MISTRAL: {
+    SMALL: 'mistral-small-latest',
+    PIXTRAL: 'pixtral-12b-2409',
+    NEMO: 'open-mistral-nemo',
+    CODESTRAL: 'open-codestral-mamba',
+    MATHSTRAL: 'mathstral',
   },
 };
 
@@ -81,6 +91,7 @@ export const API_ENDPOINTS = {
   GOOGLE: 'https://generativelanguage.googleapis.com/v1beta/models',
   XAI: 'https://api.xai.com/v1/chat/completions',
   COHERE: 'https://api.cohere.ai/v1/chat',
+  MISTRAL: 'https://api.mistral.ai/v1/chat/completions',
 };
 
 // Regex patterns

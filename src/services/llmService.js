@@ -29,6 +29,8 @@ export const sendMessageToLLM = async ({ messages, model, apiKey }) => {
     return sendToXAI({ messages: enhancedMessages, model, apiKey });
   } else if (model.startsWith('cohere') || model === 'cohere') {
     return sendToCohere({ messages: enhancedMessages, model, apiKey });
+  } else if (model.startsWith('mistral') || model.startsWith('pixtral') || model.startsWith('open-mistral') || model.startsWith('open-codestral') || model === 'mathstral') {
+    return sendToMistral({ messages: enhancedMessages, model, apiKey });
   } else {
     throw new Error(`Unsupported model: ${model}`);
   }
@@ -253,6 +255,52 @@ const sendToCohere = async ({ messages, model, apiKey }) => {
     } else {
       
       errorMessage = error.message || 'Unknown error with Cohere API request';
+    }
+    
+    throw new Error(errorMessage);
+  }
+};
+
+/**
+ * Send a message to Mistral API
+ */
+const sendToMistral = async ({ messages, model, apiKey }) => {
+  try {
+    const response = await axios.post(
+      'https://api.mistral.ai/v1/chat/completions',
+      {
+        model,
+        messages: messages.map(msg => ({
+          role: msg.role,
+          content: msg.content
+        })),
+        temperature: 0.7,
+        max_tokens: 1000,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        }
+      }
+    );
+    
+    return {
+      role: 'assistant',
+      content: response.data.choices[0].message.content
+    };
+  } catch (error) {
+    console.error('Mistral API error:', error);
+    
+    let errorMessage = 'Error communicating with Mistral API';
+    
+    if (error.response) {
+      errorMessage = error.response.data?.error?.message || `Mistral API error: ${error.response.status}`;
+      console.error('Mistral API response data:', error.response.data);
+    } else if (error.request) {
+      errorMessage = 'No response received from Mistral API';
+    } else {
+      errorMessage = error.message || 'Unknown error with Mistral API request';
     }
     
     throw new Error(errorMessage);

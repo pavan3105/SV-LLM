@@ -282,10 +282,19 @@ const models = [
   { id: 'claude-3-sonnet', name: 'Claude 3 Sonnet', provider: 'Anthropic', description: 'Balanced performance and efficiency' },
   { id: 'gemini-pro', name: 'Gemini Pro', provider: 'Google', description: 'Google\'s advanced reasoning model' },
   { id: 'grok-1', name: 'Grok-1', provider: 'xAI', description: 'Real-time knowledge and code analysis' },
+  
+  // New Mistral models
+  { id: 'mistral-small-latest', name: 'Mistral Small', provider: 'Mistral AI', description: 'Small model with image understanding for security analysis' },
+  { id: 'pixtral-12b-2409', name: 'Pixtral', provider: 'Mistral AI', description: 'Visual and text security analysis capabilities' },
+  { id: 'open-mistral-nemo', name: 'Mistral Nemo', provider: 'Mistral AI', description: 'Multilingual security documentation analysis' },
+  { id: 'open-codestral-mamba', name: 'Codestral Mamba', provider: 'Mistral AI', description: 'Extended context code security analysis (256k)' },
+  { id: 'mathstral', name: 'Mathstral', provider: 'Mistral AI', description: 'Cryptographic and mathematical security analysis' },
+  
+  // Existing Cohere models
   { id: 'cohere-command', name: 'Cohere Command', provider: 'CohereAI', description: 'Flagship model for comprehensive security analysis' },
-  { id: 'cohere-command-light', name: 'Cohere Command Light', provider: 'CohereAI', description: 'Faster, more efficient security assessment' },
-  { id: 'cohere-command-r', name: 'Cohere Command-R', provider: 'CohereAI', description: 'Enhanced for security research and retrieval' },
-  { id: 'cohere-command-r-plus', name: 'Cohere Command-R+', provider: 'CohereAI', description: 'Advanced reasoning for complex security tasks' }
+  { id: 'cohere-command-light', name: 'Command Light', provider: 'CohereAI', description: 'Faster, more efficient security assessment' },
+  { id: 'cohere-command-r', name: 'Command-R', provider: 'CohereAI', description: 'Enhanced for security research and retrieval' },
+  { id: 'cohere-command-r-plus', name: 'Command-R+', provider: 'CohereAI', description: 'Advanced reasoning for complex security tasks' }
 ];
 
 export default Settings;
