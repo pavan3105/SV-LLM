@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import MessageList from './MessageList';
 import ChatInput from './ChatInput';
 import LoadingIndicator from './LoadingIndicator';
+import MissingInputsForm from './MissingInputsForm';
 import { useTheme } from '../../context/ThemeContext';
 
 const ChatWindow = ({
@@ -14,8 +15,8 @@ const ChatWindow = ({
   const { darkMode } = useTheme();
   const messagesEndRef = useRef(null);
   const [prompt, setPrompt] = useState('');
+  const [missingInputs, setMissingInputs] = useState(null);
 
-  
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
@@ -24,14 +25,33 @@ const ChatWindow = ({
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  
   const handleSubmit = (text) => {
     if (text.trim() === '') return;
-    onSendMessage(text);
+    onSendMessage(text)
+      .catch(error => {
+        // Check if the error indicates missing inputs
+        if (error.response?.data?.status === 'missing_inputs') {
+          setMissingInputs(error.response.data.required_inputs);
+        }
+      });
     setPrompt('');
   };
 
-  
+  const handleMissingInputsSubmit = (inputs) => {
+    setMissingInputs(null);
+    
+    // Format the inputs into a string to append to the query
+    const inputsText = Object.entries(inputs)
+      .map(([key, value]) => `${key}: ${value}`)
+      .join('\n');
+    
+    // Create an updated query with the additional information
+    const updatedPrompt = `${prompt}\n\nAdditional Information:\n${inputsText}`;
+    
+    // Send the updated query
+    handleSubmit(updatedPrompt);
+  };
+
   const emptyState = messages.length === 0 && !isLoading;
 
   return (
@@ -75,6 +95,16 @@ const ChatWindow = ({
           </div>
         )}
         
+        {/* Missing inputs form */}
+        {missingInputs && (
+          <div className="px-4 py-2">
+            <MissingInputsForm 
+              missingInputs={missingInputs}
+              onSubmit={handleMissingInputsSubmit}
+            />
+          </div>
+        )}
+        
         <div ref={messagesEndRef} />
       </div>
       
@@ -90,7 +120,6 @@ const ChatWindow = ({
     </div>
   );
 };
-
 
 const suggestedPrompts = [
   {

@@ -135,3 +135,28 @@ export const createError = (message, details = {}) => {
   
   return error;
 };
+/**
+ * Format a backend API error
+ * @param {Error|Object} error - Error object
+ * @returns {string} - Formatted error message
+ */
+export const formatBackendError = (error) => {
+  const baseMessage = getErrorMessage(error);
+  
+  // Check for specific backend error status
+  if (error.response?.data?.status) {
+    switch (error.response.data.status) {
+      case 'missing_inputs':
+        const missingFields = Object.values(error.response.data.required_inputs || {}).flat();
+        return `Additional information required: ${missingFields.join(', ')}`;
+        
+      case 'error':
+        return `Backend processing error: ${error.response.data.message || baseMessage}`;
+        
+      default:
+        return `Backend error: ${baseMessage}`;
+    }
+  }
+  
+  return `Backend error: ${baseMessage}`;
+};

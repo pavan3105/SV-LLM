@@ -10,7 +10,7 @@ export const useConfig = () => useContext(ConfigContext);
 export const ConfigProvider = ({ children }) => {
  
   const [selectedModel, setSelectedModel] = useState(() => {
-    return localStorage.getItem('selectedModel') || 'gpt-4';
+    return localStorage.getItem('selectedModel') || 'gpt-4o-2024-11-20';
   });
 
   
