@@ -204,3 +204,136 @@ input[type="range"]::-moz-range-thumb {
 .feedback-thank-you {
   animation: fadeInUp 0.3s ease forwards;
 }
+
+/* Add these styles to your tailwind.css file */
+.prose strong {
+  @apply font-bold text-inherit;
+}
+
+.dark .prose strong {
+  @apply text-white;
+}
+
+/* Improve styles for different types of content */
+.prose p {
+  @apply my-2.5 leading-relaxed;
+}
+
+.prose ul, .prose ol {
+  @apply my-3 pl-6;
+}
+
+.prose li {
+  @apply my-1.5 leading-relaxed;
+}
+
+/* Enhance list bullet styles */
+.prose ul li::before {
+  @apply text-primary-500 dark:text-primary-400;
+}
+
+.prose ol li::marker {
+  @apply text-primary-600 dark:text-primary-400 font-semibold;
+}
+/* Add these styles to your tailwind.css file */
+
+/* Completely revised bullet styling with proper indentation */
+.custom-bullets ul {
+  @apply pl-0 list-none;
+}
+
+.custom-bullets ul li {
+  @apply relative pl-10 mb-2.5 text-left; /* Increased padding and ensured text alignment */
+}
+
+.custom-bullets ul li::before {
+  content: "•";
+  @apply absolute left-4 top-0 text-primary-500 dark:text-primary-400 text-lg font-bold; /* Positioned precisely */
+}
+
+/* For nested list items */
+.custom-bullets ul li ul li {
+  @apply pl-8 mb-1.5; /* Less padding for nested items */
+}
+
+.custom-bullets ul li ul li::before {
+  @apply left-2; /* Adjust bullet position for nested items */
+}
+
+/* Better styling for numbered lists */
+.custom-bullets ol {
+  @apply pl-10 list-decimal; /* Consistent with unordered lists */
+}
+
+.custom-bullets ol li {
+  @apply pl-2 mb-2.5 text-left; /* Aligned with unordered lists */
+}
+
+.custom-bullets ol li::marker {
+  @apply text-primary-600 dark:text-primary-400 font-semibold;
+}
+
+/* For nested numbered lists */
+.custom-bullets ol li ol li {
+  @apply pl-0 ml-8 mb-1.5; /* Less padding for nested items */
+}
+
+/* For the case where titles are in the bullet points */
+.custom-bullets ul li strong,
+.custom-bullets ol li strong {
+  @apply mr-1; /* Add margin after bold text in list items */
+}
+
+/* Enhanced bold text styling */
+.prose strong {
+  @apply font-bold text-inherit;
+}
+
+.dark .prose strong {
+  @apply text-white;
+}
+
+/* Paragraphs and spacing */
+.prose p {
+  @apply my-2.5 leading-relaxed;
+}
+
+/* Headings */
+.prose h1, .prose h2, .prose h3, .prose h4 {
+  @apply font-semibold;
+}
+
+.prose h1 {
+  @apply text-2xl mt-6 mb-4 pb-1 border-b border-gray-200 dark:border-gray-700;
+}
+
+.prose h2 {
+  @apply text-xl mt-5 mb-3 pb-1 border-b border-gray-200 dark:border-gray-700;
+}
+
+.prose h3 {
+  @apply text-lg mt-4 mb-2;
+}
+
+.prose h4 {
+  @apply text-base mt-3 mb-2;
+}
+
+/* Code blocks */
+.prose pre {
+  @apply my-4 p-4 rounded-md overflow-auto;
+}
+
+.prose code {
+  @apply font-mono text-sm;
+}
+
+/* Blockquotes */
+.prose blockquote {
+  @apply border-l-4 pl-4 py-1 my-4 italic border-gray-300 dark:border-gray-600;
+}
+
+/* Links */
+.prose a {
+  @apply text-primary-600 dark:text-primary-400 hover:underline;
+}

@@ -4,11 +4,12 @@ import hljs from 'highlight.js';
 import 'highlight.js/styles/github-dark.css';
 import { useTheme } from '../../context/ThemeContext';
 
-// Initialize markdown parser with syntax highlighting
+// Initialize markdown parser with enhanced settings
 const md = new MarkdownIt({
   html: false,
   linkify: true,
   typographer: true,
+  breaks: true, // Enable line breaks
   highlight: function (str, lang) {
     if (lang && hljs.getLanguage(lang)) {
       try {
@@ -25,19 +26,38 @@ const ChatBubble = ({ message, isUser }) => {
   const { darkMode } = useTheme();
   const [renderedContent, setRenderedContent] = useState('');
   
-  // Process message content when message changes
-  useEffect(() => {
-    if (message.content) {
-      try {
-        // Render markdown to HTML
-        const html = md.render(message.content);
+useEffect(() => {
+  if (message.content) {
+    try {
+      if (!isUser) {
+        let processedContent = message.content;
+        
+        processedContent = processedContent.replace(/^(\s*)(\*|-)\s+/gm, (match, spaces, bullet) => {
+          const level = Math.floor(spaces.length / 2);
+          return `${'  '.repeat(level)}${bullet} `;
+        });
+        
+        processedContent = processedContent.replace(/^([A-Za-z0-9\s]+):\s*$/gm, '**$1:**');
+        
+        processedContent = processedContent.replace(/^(\s*)(\*|-)\s+([A-Za-z0-9\s]+):\s*/gm, 
+          '$1$2 **$3:** ');
+        
+        processedContent = processedContent.replace(/^(\d+)\.\s+/gm, '$1. ');
+        
+        processedContent = processedContent.replace(/^(\s*)(\*|-)\s{2,}/gm, '$1$2 ');
+        
+        const html = md.render(processedContent);
+        
         setRenderedContent(html);
-      } catch (error) {
-        console.error("Markdown rendering error:", error);
-        setRenderedContent(`<p>${message.content}</p>`);
+      } else {
+        setRenderedContent(md.render(message.content));
       }
+    } catch (error) {
+      console.error("Markdown rendering error:", error);
+      setRenderedContent(`<p>${message.content}</p>`);
     }
-  }, [message.content]);
+  }
+}, [message.content, isUser]);
 
   // Bubble style based on sender and theme
   const bubbleClasses = isUser
@@ -49,7 +69,7 @@ const ChatBubble = ({ message, isUser }) => {
   return (
     <div className={`px-4 py-3 ${bubbleClasses} shadow-sm`}>
       <div 
-        className="prose dark:prose-invert max-w-none prose-pre:bg-gray-800 dark:prose-pre:bg-black prose-code:text-pink-600 dark:prose-code:text-pink-400"
+        className="prose custom-bullets dark:prose-invert max-w-none prose-pre:bg-gray-800 dark:prose-pre:bg-black prose-code:text-pink-600 dark:prose-code:text-pink-400 prose-li:my-1.5 prose-p:my-2.5 prose-headings:mt-5 prose-headings:mb-3 prose-strong:font-bold"
         dangerouslySetInnerHTML={{ __html: renderedContent }} 
       />
     </div>

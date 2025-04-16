@@ -83,3 +83,41 @@ export const truncateText = (text, length = 100, suffix = '...') => {
   
   return text.substring(0, length).trim() + suffix;
 };
+
+// Add this to src/utils/formatters.js
+
+/**
+ * Format AI response for better readability
+ * @param {string} text - Raw response text
+ * @returns {string} - Formatted response text
+ */
+export const formatAIResponse = (text) => {
+  if (!text) return '';
+  
+  let formattedText = text;
+  
+  // Ensure proper spacing after periods if not followed by a newline or space
+  formattedText = formattedText.replace(/\.(\w)/g, '. $1');
+  
+  // Ensure proper spacing after colons for lists if not followed by a space
+  formattedText = formattedText.replace(/:\n/g, ':\n\n');
+  
+  // Improve list formatting
+  formattedText = formattedText.replace(/^(\d+\.|\*|\-)\s/gm, '$1 ');
+  
+  // Enhance code block spacing
+  formattedText = formattedText.replace(/```(.+?)```/gs, (match) => {
+    return "\n" + match + "\n";
+  });
+  
+  // Add spacing around headings
+  formattedText = formattedText.replace(/^(#{1,6})\s/gm, "\n$1 ");
+  
+  // Ensure there are blank lines between paragraphs
+  formattedText = formattedText.replace(/([^\n])\n([^\n])/g, '$1\n\n$2');
+  
+  // Improve table formatting
+  formattedText = formattedText.replace(/(\|.*\|)\n(?!\|)/g, '$1\n\n');
+  
+  return formattedText;
+};
