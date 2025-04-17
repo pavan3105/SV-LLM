@@ -19,7 +19,6 @@ const ChatWindow = ({
   const messageContainerRef = useRef(null);
   const messagesEndRef = useRef(null);
   
-  const [prompt, setPrompt] = useState('');
   const [missingInputs, setMissingInputs] = useState(null);
   
   const [scrollPositions, setScrollPositions] = useState({});
@@ -107,8 +106,6 @@ const ChatWindow = ({
           setMissingInputs(error.response.data.required_inputs);
         }
       });
-    
-    setPrompt('');
   };
 
   // Handle missing inputs submission
@@ -119,12 +116,33 @@ const ChatWindow = ({
       .map(([key, value]) => `${key}: ${value}`)
       .join('\n');
     
-    const updatedPrompt = `${prompt}\n\nAdditional Information:\n${inputsText}`;
-    
-    handleSubmit(updatedPrompt);
+    handleSubmit(inputsText);
   };
 
   const emptyState = messages.length === 0 && !isChatLoading;
+
+  const suggestedPrompts = [
+    {
+      title: "Security Analysis",
+      description: "Get insights on the security of your system",
+      text: "Can you analyze the security implications of a microservice architecture with a shared API gateway and service-to-service communication?"
+    },
+    {
+      title: "Code Security Review",
+      description: "Review code for security issues",
+      text: "Review this authentication function for security vulnerabilities:\n\nfunction authenticate(username, password) {\n  const user = db.findUser(username);\n  if (user && user.password === password) {\n    return generateToken(user);\n  }\n  return null;\n}"
+    },
+    {
+      title: "Security Best Practices",
+      description: "Learn about security best practices",
+      text: "What are the best practices for securely storing user credentials in a web application?"
+    },
+    {
+      title: "Fix Security Issues",
+      description: "Get help improving your code's security",
+      text: "How can I fix this potentially vulnerable code in my Node.js application?\n\napp.get('/users', (req, res) => {\n  const userId = req.query.id;\n  const query = `SELECT * FROM users WHERE id = ${userId}`;\n  db.query(query, (err, results) => {\n    res.json(results);\n  });\n});"
+    }
+  ];
 
   return (
     <div className={`h-full flex flex-col rounded-lg overflow-hidden ${darkMode ? 'bg-dark-200' : 'bg-white'} shadow-lg`}>
@@ -149,7 +167,6 @@ const ChatWindow = ({
                       ? 'bg-dark-100 hover:bg-dark-400 border border-gray-700' 
                       : 'bg-gray-100 hover:bg-gray-200 border border-gray-200'
                   }`}
-                  onClick={() => setPrompt(prompt.text)}
                 >
                   <h3 className="font-medium mb-1">{prompt.title}</h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400">{prompt.description}</p>
@@ -189,8 +206,6 @@ const ChatWindow = ({
         <ChatInput 
           onSubmit={handleSubmit} 
           isLoading={isChatLoading}
-          value={prompt}
-          onChange={setPrompt}
         />
       </div>
       
@@ -216,28 +231,5 @@ const ChatWindow = ({
     </div>
   );
 };
-
-const suggestedPrompts = [
-  {
-    title: "Security Analysis",
-    description: "Get insights on the security of your system",
-    text: "Can you analyze the security implications of a microservice architecture with a shared API gateway and service-to-service communication?"
-  },
-  {
-    title: "Code Security Review",
-    description: "Review code for security issues",
-    text: "Review this authentication function for security vulnerabilities:\n\nfunction authenticate(username, password) {\n  const user = db.findUser(username);\n  if (user && user.password === password) {\n    return generateToken(user);\n  }\n  return null;\n}"
-  },
-  {
-    title: "Security Best Practices",
-    description: "Learn about security best practices",
-    text: "What are the best practices for securely storing user credentials in a web application?"
-  },
-  {
-    title: "Fix Security Issues",
-    description: "Get help improving your code's security",
-    text: "How can I fix this potentially vulnerable code in my Node.js application?\n\napp.get('/users', (req, res) => {\n  const userId = req.query.id;\n  const query = `SELECT * FROM users WHERE id = ${userId}`;\n  db.query(query, (err, results) => {\n    res.json(results);\n  });\n});"
-  }
-];
 
 export default ChatWindow;

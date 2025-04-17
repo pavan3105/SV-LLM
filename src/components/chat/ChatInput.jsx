@@ -1,11 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { PaperAirplaneIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import { useTheme } from '../../context/ThemeContext';
+import { useChat } from '../../hooks/useChat';
 
-const ChatInput = ({ onSubmit, isLoading, value, onChange }) => {
+const ChatInput = ({ onSubmit, isLoading }) => {
   const { darkMode } = useTheme();
+  const { activeChat, chatPrompts, updateChatPrompt } = useChat();
   const textareaRef = useRef(null);
 
+  // Get the current chat's prompt, defaulting to empty string
+  const currentPrompt = activeChat ? chatPrompts[activeChat.id] || '' : '';
   
   useEffect(() => {
     const textarea = textareaRef.current;
@@ -14,32 +18,36 @@ const ChatInput = ({ onSubmit, isLoading, value, onChange }) => {
       const newHeight = Math.min(textarea.scrollHeight, 200); // Max height of 200px
       textarea.style.height = `${newHeight}px`;
     }
-  }, [value]);
-
+  }, [currentPrompt]);
 
   useEffect(() => {
     textareaRef.current?.focus();
-  }, []);
+  }, [activeChat]);
 
-  
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (value.trim() !== '' && !isLoading) {
-      onSubmit(value);
+    if (currentPrompt.trim() !== '' && !isLoading && activeChat) {
+      onSubmit(currentPrompt);
     }
   };
 
-  
   const handleKeyDown = (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
       handleSubmit(e);
     }
   };
 
-  
+  const handleChange = (value) => {
+    if (activeChat) {
+      updateChatPrompt(activeChat.id, value);
+    }
+  };
+
   const handleClear = () => {
-    onChange('');
-    textareaRef.current?.focus();
+    if (activeChat) {
+      updateChatPrompt(activeChat.id, '');
+      textareaRef.current?.focus();
+    }
   };
 
   return (
@@ -50,8 +58,8 @@ const ChatInput = ({ onSubmit, isLoading, value, onChange }) => {
         {/* Textarea for input */}
         <textarea
           ref={textareaRef}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
+          value={currentPrompt}
+          onChange={(e) => handleChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Ask a security question or enter code to analyze..."
           rows="1"
@@ -64,7 +72,7 @@ const ChatInput = ({ onSubmit, isLoading, value, onChange }) => {
         {/* Action buttons */}
         <div className="absolute bottom-0 right-0 flex items-center space-x-1 p-2">
           {/* Clear button (only show when there's input) */}
-          {value && (
+          {currentPrompt && (
             <button
               type="button"
               onClick={handleClear}
@@ -82,9 +90,9 @@ const ChatInput = ({ onSubmit, isLoading, value, onChange }) => {
           {/* Submit button */}
           <button
             type="submit"
-            disabled={isLoading || !value.trim()}
+            disabled={isLoading || !currentPrompt.trim()}
             className={`p-1.5 rounded-full transition-colors ${
-              isLoading || !value.trim()
+              isLoading || !currentPrompt.trim()
                 ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                 : 'bg-primary-600 hover:bg-primary-700 text-white'
             }`}

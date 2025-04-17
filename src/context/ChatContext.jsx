@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect, useRef } from 'react';
+import React, { createContext, useState, useContext, useEffect, useRef, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useConfig } from './ConfigContext';
 import { sendMessageToLLM } from '../services/llmService';
@@ -11,18 +11,12 @@ export const useChat = () => useContext(ChatContext);
 export const ChatProvider = ({ children }) => {
   const { selectedModel, apiKey, contextWindow } = useConfig();
   
-  
   const [activeChatId, setActiveChatId] = useState(null);
-  
   const [messages, setMessages] = useState([]);
-  
-  
   const [loadingChats, setLoadingChats] = useState({});
-  
   const [error, setError] = useState(null);
-  
-  
   const [chatHistory, setChatHistory] = useState([]);
+  const [chatPrompts, setChatPrompts] = useState({});  // New state to track prompts per chat
   
   const activeChatRef = useRef(null);
 
@@ -72,6 +66,12 @@ export const ChatProvider = ({ children }) => {
     setMessages([]);
     activeChatRef.current = newChat;
     
+    // Initialize prompt for new chat
+    setChatPrompts(prev => ({
+      ...prev,
+      [newChat.id]: ''
+    }));
+    
     storeChatHistory(updatedHistory);
     
     return newChat;
@@ -96,7 +96,15 @@ export const ChatProvider = ({ children }) => {
     setChatHistory(updatedHistory);
     storeChatHistory(updatedHistory);
     
+    // Remove loading state and prompt for this chat
     setLoadingChats(prev => {
+      const updated = {...prev};
+      delete updated[chatId];
+      return updated;
+    });
+    
+    // Remove prompt for deleted chat
+    setChatPrompts(prev => {
       const updated = {...prev};
       delete updated[chatId];
       return updated;
@@ -159,6 +167,12 @@ export const ChatProvider = ({ children }) => {
       [targetChatId]: true
     }));
     
+    // Clear the prompt for this specific chat
+    setChatPrompts(prev => ({
+      ...prev,
+      [targetChatId]: ''
+    }));
+    
     setError(null);
     
     try {
@@ -188,7 +202,6 @@ export const ChatProvider = ({ children }) => {
           lastUpdated: new Date().toISOString()
         };
         
-        // Create updated history
         const finalHistory = latestChatHistory.map(c => 
           c.id === targetChatId ? chatWithResponse : c
         );
@@ -211,9 +224,45 @@ export const ChatProvider = ({ children }) => {
       }));
     }
   };
-
+  
   const provideFeedback = (messageId, feedback) => {
     console.log(`Feedback for message ${messageId}:`, feedback);
+    
+    // Implement actual feedback logic if needed
+    try {
+      // You can add more robust feedback handling here
+      // For now, just a simple logging mechanism
+      return { success: true, message: 'Feedback recorded' };
+    } catch (error) {
+      console.error('Error providing feedback:', error);
+      return { success: false, message: 'Failed to record feedback' };
+    }
+  };
+
+  const updateChatPrompt = useCallback((chatId, prompt) => {
+    setChatPrompts(prev => ({
+      ...prev,
+      [chatId]: prompt
+    }));
+  }, []);
+
+  const renameChatTitle = (chatId, newTitle) => {
+    const updatedHistory = chatHistory.map(chat => 
+      chat.id === chatId 
+        ? { ...chat, title: newTitle.trim() } 
+        : chat
+    );
+    
+    setChatHistory(updatedHistory);
+    storeChatHistory(updatedHistory);
+    
+    // If the renamed chat is the active chat, update the reference
+    if (activeChatId === chatId) {
+      const updatedChat = updatedHistory.find(c => c.id === chatId);
+      if (updatedChat) {
+        activeChatRef.current = updatedChat;
+      }
+    }
   };
 
   const isLoading = (chatId) => {
@@ -235,7 +284,10 @@ export const ChatProvider = ({ children }) => {
     createNewChat,
     selectChat,
     deleteChat,
-    refreshChatHistory
+    refreshChatHistory,
+    chatPrompts,  // Expose chat prompts
+    updateChatPrompt,  // Method to update chat prompts
+    renameChatTitle
   };
 
   return (

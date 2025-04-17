@@ -6,7 +6,8 @@ import { useTheme } from '../../context/ThemeContext';
  * Displays when an uncaught error occurs in the app
  */
 const ErrorFallback = ({ error, resetErrorBoundary }) => {
-  const { darkMode } = useTheme();
+  // Use a default dark mode state if theme context is not available
+  const { darkMode = true } = useTheme() || {};
   
   return (
     <div className={`min-h-screen flex items-center justify-center p-4 ${

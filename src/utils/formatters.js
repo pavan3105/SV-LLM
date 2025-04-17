@@ -117,7 +117,23 @@ export const formatAIResponse = (text) => {
   formattedText = formattedText.replace(/([^\n])\n([^\n])/g, '$1\n\n$2');
   
   // Improve table formatting
-  formattedText = formattedText.replace(/(\|.*\|)\n(?!\|)/g, '$1\n\n');
+  // Ensure each table row has proper pipe formatting
+  formattedText = formattedText.replace(/^(\*\*[^*\n]+\*\*)\n/gm, '$1\n\n');
+  
+  // Enhance table parsing by adding pipes if missing
+  formattedText = formattedText.replace(/^([^\|]+)$/gm, (match) => {
+    // Split the line into columns
+    const columns = match.split(/\s{2,}/);
+    return columns.map(col => col.trim()).join(' | ');
+  });
+  
+  // Ensure table rows are properly formatted with pipes
+  formattedText = formattedText.replace(/^([^|\n]+)$/gm, (match) => {
+    return '| ' + match.trim().replace(/\s{2,}/g, ' | ') + ' |';
+  });
+  
+  // Add header separator for tables if missing
+  formattedText = formattedText.replace(/(\|[^\n]+\|)\n(\|[^\n]+\|)/g, '$1\n| --- | --- |\n$2');
   
   return formattedText;
 };

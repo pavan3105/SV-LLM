@@ -337,3 +337,28 @@ input[type="range"]::-moz-range-thumb {
 .prose a {
   @apply text-primary-600 dark:text-primary-400 hover:underline;
 }
+
+/* Table styling */
+.prose table {
+  @apply w-full my-4 border-collapse;
+}
+
+.prose thead {
+  @apply bg-gray-100 dark:bg-dark-100 border-b border-gray-200 dark:border-gray-700;
+}
+
+.prose th {
+  @apply px-4 py-2 text-left font-semibold border border-gray-200 dark:border-gray-700;
+}
+
+.prose td {
+  @apply px-4 py-2 border border-gray-200 dark:border-gray-700;
+}
+
+.prose tr:nth-child(even) {
+  @apply bg-gray-50 dark:bg-dark-200;
+}
+
+.prose tr:hover {
+  @apply bg-gray-100 dark:bg-dark-100;
+}
