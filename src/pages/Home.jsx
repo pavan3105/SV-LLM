@@ -9,9 +9,9 @@ const Home = () => {
   const { 
     messages, 
     sendMessage, 
-    isLoading, 
     error,
-    provideFeedback
+    provideFeedback,
+    activeChat
   } = useChat();
 
   return (
@@ -29,11 +29,10 @@ const Home = () => {
         <div className="flex-1 overflow-hidden">
           <ChatWindow
             messages={messages}
-            isLoading={isLoading}
             onSendMessage={sendMessage}
             onProvideFeedback={provideFeedback}
             selectedModel={selectedModel}
-            contextWindow={contextWindow}
+            activeChatId={activeChat?.id} 
           />
         </div>
 

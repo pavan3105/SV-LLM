@@ -4,18 +4,23 @@ import ChatInput from './ChatInput';
 import LoadingIndicator from './LoadingIndicator';
 import MissingInputsForm from './MissingInputsForm';
 import { useTheme } from '../../context/ThemeContext';
+import { useChat } from '../../hooks/useChat';
 
 const ChatWindow = ({
   messages,
-  isLoading,
   onSendMessage,
   onProvideFeedback,
-  selectedModel
+  selectedModel,
+  activeChatId 
 }) => {
   const { darkMode } = useTheme();
+  const { isLoading } = useChat(); // Get the isLoading function from context
   const messagesEndRef = useRef(null);
   const [prompt, setPrompt] = useState('');
   const [missingInputs, setMissingInputs] = useState(null);
+
+  
+  const isChatLoading = isLoading(activeChatId);
 
   useEffect(() => {
     scrollToBottom();
@@ -52,7 +57,7 @@ const ChatWindow = ({
     handleSubmit(updatedPrompt);
   };
 
-  const emptyState = messages.length === 0 && !isLoading;
+  const emptyState = messages.length === 0 && !isChatLoading;
 
   return (
     <div className={`h-full flex flex-col rounded-lg overflow-hidden ${darkMode ? 'bg-dark-200' : 'bg-white'} shadow-lg`}>
@@ -89,7 +94,7 @@ const ChatWindow = ({
         )}
         
         {/* Loading indicator */}
-        {isLoading && (
+        {isChatLoading && (
           <div className="px-4 py-2">
             <LoadingIndicator model={selectedModel} />
           </div>
@@ -112,7 +117,7 @@ const ChatWindow = ({
       <div className={`p-4 border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
         <ChatInput 
           onSubmit={handleSubmit} 
-          isLoading={isLoading}
+          isLoading={isChatLoading}
           value={prompt}
           onChange={setPrompt}
         />

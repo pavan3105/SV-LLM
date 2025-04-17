@@ -1,51 +1,61 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useConfig } from './ConfigContext';
 import { sendMessageToLLM } from '../services/llmService';
 import { storeChatHistory, loadChatHistory } from '../services/storageService';
 
-
 export const ChatContext = createContext();
 
-
 export const useChat = () => useContext(ChatContext);
-
 
 export const ChatProvider = ({ children }) => {
   const { selectedModel, apiKey, contextWindow } = useConfig();
   
+  
+  const [activeChatId, setActiveChatId] = useState(null);
+  
   const [messages, setMessages] = useState([]);
   
   
-  const [isLoading, setIsLoading] = useState(false);
+  const [loadingChats, setLoadingChats] = useState({});
   
   const [error, setError] = useState(null);
   
+  
   const [chatHistory, setChatHistory] = useState([]);
   
-  
-  const [activeChat, setActiveChat] = useState(null);
+  const activeChatRef = useRef(null);
 
   useEffect(() => {
     refreshChatHistory();
   }, []);
 
-  
+  useEffect(() => {
+    if (activeChatId) {
+      const chat = chatHistory.find(c => c.id === activeChatId);
+      if (chat) {
+        setMessages(chat.messages || []);
+        activeChatRef.current = chat;
+      }
+    }
+  }, [activeChatId, chatHistory]);
+
   const refreshChatHistory = () => {
     const history = loadChatHistory();
     setChatHistory(history);
     
     if (history.length > 0) {
-      setActiveChat(history[0]);
+      setActiveChatId(history[0].id);
       setMessages(history[0].messages || []);
+      activeChatRef.current = history[0];
     } else {
-      setActiveChat(null);
+      setActiveChatId(null);
       setMessages([]);
+      activeChatRef.current = null;
       createNewChat();
     }
   };
 
- 
   const createNewChat = () => {
     const newChat = {
       id: uuidv4(),
@@ -55,40 +65,44 @@ export const ChatProvider = ({ children }) => {
       messages: []
     };
     
-   
     const updatedHistory = [newChat, ...chatHistory];
     setChatHistory(updatedHistory);
-    setActiveChat(newChat);
-    setMessages([]);
     
-   
+    setActiveChatId(newChat.id);
+    setMessages([]);
+    activeChatRef.current = newChat;
+    
     storeChatHistory(updatedHistory);
     
     return newChat;
   };
 
-  
   const resetChat = () => {
     createNewChat();
   };
 
-  
   const selectChat = (chatId) => {
+    setActiveChatId(chatId);
+    
     const chat = chatHistory.find(c => c.id === chatId);
     if (chat) {
-      setActiveChat(chat);
       setMessages(chat.messages || []);
+      activeChatRef.current = chat;
     }
   };
 
-  
   const deleteChat = (chatId) => {
     const updatedHistory = chatHistory.filter(c => c.id !== chatId);
     setChatHistory(updatedHistory);
     storeChatHistory(updatedHistory);
     
+    setLoadingChats(prev => {
+      const updated = {...prev};
+      delete updated[chatId];
+      return updated;
+    });
     
-    if (activeChat && activeChat.id === chatId) {
+    if (activeChatId === chatId) {
       if (updatedHistory.length > 0) {
         selectChat(updatedHistory[0].id);
       } else {
@@ -97,17 +111,22 @@ export const ChatProvider = ({ children }) => {
     }
   };
 
-  
   const sendMessage = async (text) => {
     if (!text.trim()) return;
-    
     
     if (!apiKey) {
       setError(new Error('API key is required. Please add your API key in the configuration panel.'));
       return;
     }
     
-   
+    const targetChatId = activeChatId;
+    const targetChat = activeChatRef.current;
+    
+    if (!targetChat) {
+      console.error("No active chat found");
+      return;
+    }
+    
     const userMessage = {
       id: uuidv4(),
       role: 'user',
@@ -115,32 +134,35 @@ export const ChatProvider = ({ children }) => {
       timestamp: new Date().toISOString()
     };
     
-    
-    const updatedMessages = [...messages, userMessage];
-    setMessages(updatedMessages);
-  
-    const updatedChat = {
-      ...activeChat,
-      messages: updatedMessages,
+    if (activeChatId === targetChatId) {
+      setMessages(prev => [...prev, userMessage]);
+    }
+
+    const chatWithUserMessage = {
+      ...targetChat,
+      messages: [...(targetChat.messages || []), userMessage],
       lastUpdated: new Date().toISOString(),
-      title: activeChat.title === 'New Chat' && messages.length === 0 
+      title: targetChat.title === 'New Chat' && targetChat.messages.length === 0 
         ? text.slice(0, 30) + (text.length > 30 ? '...' : '') 
-        : activeChat.title
+        : targetChat.title
     };
     
     const updatedHistory = chatHistory.map(c => 
-      c.id === activeChat.id ? updatedChat : c
+      c.id === targetChatId ? chatWithUserMessage : c
     );
     
-    setActiveChat(updatedChat);
     setChatHistory(updatedHistory);
     storeChatHistory(updatedHistory);
-    setIsLoading(true);
+    
+    setLoadingChats(prev => ({
+      ...prev,
+      [targetChatId]: true
+    }));
+    
     setError(null);
     
     try {
-      
-      const contextMessages = updatedMessages.slice(-Math.floor(contextWindow / 200)); 
+      const contextMessages = chatWithUserMessage.messages.slice(-Math.floor(contextWindow / 200)); 
       
       const response = await sendMessageToLLM({
         messages: contextMessages,
@@ -148,7 +170,6 @@ export const ChatProvider = ({ children }) => {
         apiKey
       });
       
-     
       const assistantMessage = {
         id: uuidv4(),
         role: 'assistant',
@@ -156,37 +177,52 @@ export const ChatProvider = ({ children }) => {
         timestamp: new Date().toISOString()
       };
       
+      const latestChatHistory = loadChatHistory();
       
-      const messagesWithResponse = [...updatedMessages, assistantMessage];
-      setMessages(messagesWithResponse);
-      const chatWithResponse = {
-        ...updatedChat,
-        messages: messagesWithResponse,
-        lastUpdated: new Date().toISOString()
-      };
+      const latestTargetChat = latestChatHistory.find(c => c.id === targetChatId);
       
-      const finalHistory = updatedHistory.map(c => 
-        c.id === activeChat.id ? chatWithResponse : c
-      );
-      
-      setActiveChat(chatWithResponse);
-      setChatHistory(finalHistory);
-      storeChatHistory(finalHistory);
+      if (latestTargetChat) {
+        const chatWithResponse = {
+          ...latestTargetChat,
+          messages: [...latestTargetChat.messages, assistantMessage],
+          lastUpdated: new Date().toISOString()
+        };
+        
+        // Create updated history
+        const finalHistory = latestChatHistory.map(c => 
+          c.id === targetChatId ? chatWithResponse : c
+        );
+        
+        if (activeChatId === targetChatId) {
+          setMessages(chatWithResponse.messages);
+        }
+        
+        setChatHistory(finalHistory);
+        storeChatHistory(finalHistory);
+      }
     } catch (err) {
       console.error('Error sending message:', err);
       setError(err);
     } finally {
-      setIsLoading(false);
+      // Clear loading state
+      setLoadingChats(prev => ({
+        ...prev,
+        [targetChatId]: false
+      }));
     }
   };
 
-  
   const provideFeedback = (messageId, feedback) => {
     console.log(`Feedback for message ${messageId}:`, feedback);
-   
   };
 
-  
+  const isLoading = (chatId) => {
+    const idToCheck = chatId || activeChatId;
+    return Boolean(loadingChats[idToCheck]);
+  };
+
+  const activeChat = chatHistory.find(c => c.id === activeChatId) || null;
+
   const value = {
     messages,
     isLoading,
@@ -199,7 +235,7 @@ export const ChatProvider = ({ children }) => {
     createNewChat,
     selectChat,
     deleteChat,
-    refreshChatHistory 
+    refreshChatHistory
   };
 
   return (
