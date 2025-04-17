@@ -3,58 +3,42 @@ import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import { useTheme } from '../../context/ThemeContext';
 
-// Available models
-const models = [
-  { id: 'gpt-4o-2024-11-20', name: 'GPT-4', provider: 'OpenAI', description: 'Most capable GPT model for complex tasks' },
-  { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo', provider: 'OpenAI', description: 'Fast and cost-effective for most tasks' },
-  { id: 'claude-3-opus', name: 'Claude 3 Opus', provider: 'Anthropic', description: 'Most powerful Claude model for complex tasks' },
-  { id: 'claude-3-sonnet', name: 'Claude 3 Sonnet', provider: 'Anthropic', description: 'Balanced performance and efficiency' },
-  { id: 'gemini-pro', name: 'Gemini Pro', provider: 'Google', description: 'Google\'s advanced reasoning model' },
-  { id: 'grok-1', name: 'Grok-1', provider: 'xAI', description: 'Real-time knowledge and witty responses' },
-  
-  // New Mistral models
-  { id: 'mistral-small-latest', name: 'Mistral Small', provider: 'Mistral AI', description: 'Small model with image understanding (v3.1, March 2025)' },
-  { id: 'pixtral-12b-2409', name: 'Pixtral', provider: 'Mistral AI', description: '12B model with image and text understanding capabilities' },
-  { id: 'open-mistral-nemo', name: 'Mistral Nemo', provider: 'Mistral AI', description: 'Best multilingual open source model (July 2024)' },
-  { id: 'open-codestral-mamba', name: 'Codestral Mamba', provider: 'Mistral AI', description: 'Mamba 2 model for code (256k context)' },
-  //{ id: 'mathstral', name: 'Mathstral', provider: 'Mistral AI', description: 'Specialized model for mathematics' },
-  
-  { id: 'cohere', name: 'Cohere', provider: 'CohereAI', description: 'Chat with Cohere' },
-  { id: 'cohere-command', name: 'Command', provider: 'CohereAI', description: 'Flagship model for complex reasoning' },
-  { id: 'cohere-command-light', name: 'Command Light', provider: 'CohereAI', description: 'Faster, more efficient alternative' },
-  { id: 'cohere-command-r', name: 'Command-R', provider: 'CohereAI', description: 'Specialized for retrieval and RAG' },
-  { id: 'cohere-command-r-plus', name: 'Command-R+', provider: 'CohereAI', description: 'Enhanced retrieval and reasoning' }
+const openaiModels = [
+  { id: 'o1', name: 'o1', description: 'OpenAI custom model o1' },
+  { id: 'o3-mini', name: 'o3-mini', description: 'OpenAI lightweight variant' },
+  { id: 'gpt-4o', name: 'GPT-4o', description: 'GPT-4 omni model (April 2025)' },
+  { id: 'gpt-4-turbo', name: 'GPT-4 Turbo', description: 'Fast and cost-effective GPT-4' },
+  { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo', description: 'Legacy fast model from OpenAI' }
 ];
 
 const ModelSelector = ({ selectedModel, onSelectModel }) => {
   const { darkMode } = useTheme();
-  
-  // Find the selected model object
-  const selected = models.find(model => model.id === selectedModel) || models[0];
+  const selected = openaiModels.find(m => m.id === selectedModel) || openaiModels[0];
 
   return (
     <div className="w-full">
       <Listbox value={selected} onChange={(model) => onSelectModel(model.id)}>
         {({ open }) => (
           <div className="relative mt-1">
-            <Listbox.Button 
-              className={`relative w-full cursor-default rounded-lg py-3 pl-4 pr-10 text-left shadow-sm 
-              ${darkMode 
-                ? 'bg-dark-100 border border-gray-700 text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-600' 
-                : 'bg-white border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500'
-              }`}
-            >
-              <div className="flex flex-col">
-                <span className="block truncate font-medium">{selected.name}</span>
-                <span className="block truncate text-xs text-gray-500 dark:text-gray-400">
-                  {selected.provider} • {selected.description}
-                </span>
-              </div>
-              <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-              </span>
-            </Listbox.Button>
-            
+            <Listbox.Button
+                  className={`relative w-full cursor-default rounded-lg py-3 pl-4 pr-10 text-left shadow-sm ${
+                    darkMode
+                      ? 'bg-dark-100 border border-gray-700 text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-600'
+                      : 'bg-white border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500'
+                  }`}
+                >
+                  <div className="flex flex-col">
+                    <span className="block truncate font-medium">OpenAI models</span>
+                    <span className="block truncate text-xs text-gray-500 dark:text-gray-400">
+                      Choose a model below
+                    </span>
+                  </div>
+                  <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                    <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                  </span>
+                </Listbox.Button>
+
+
             <Transition
               show={open}
               as={React.Fragment}
@@ -62,22 +46,24 @@ const ModelSelector = ({ selectedModel, onSelectModel }) => {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Listbox.Options 
-                className={`absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none text-sm
-                ${darkMode ? 'bg-dark-100 border border-gray-700' : 'bg-white border border-gray-200'}`}
+              <Listbox.Options
+                className={`absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none text-sm ${
+                  darkMode ? 'bg-dark-100 border border-gray-700' : 'bg-white border border-gray-200'
+                }`}
               >
-                {models.map((model) => (
+               
+                {openaiModels.map((model) => (
                   <Listbox.Option
                     key={model.id}
                     className={({ active }) =>
                       `relative cursor-default select-none py-2 px-4 ${
                         active
-                          ? darkMode 
-                            ? 'bg-primary-900 text-white' 
+                          ? darkMode
+                            ? 'bg-primary-900 text-white'
                             : 'bg-primary-100 text-primary-900'
-                          : darkMode 
-                            ? 'text-gray-300' 
-                            : 'text-gray-900'
+                          : darkMode
+                          ? 'text-gray-300'
+                          : 'text-gray-900'
                       }`
                     }
                     value={model}
@@ -90,24 +76,23 @@ const ModelSelector = ({ selectedModel, onSelectModel }) => {
                           </span>
                           <span className={`block truncate text-xs ${
                             active
-                              ? darkMode 
-                                ? 'text-gray-300' 
+                              ? darkMode
+                                ? 'text-gray-300'
                                 : 'text-primary-700'
                               : 'text-gray-500 dark:text-gray-400'
                           }`}>
-                            {model.provider} • {model.description}
+                            {model.description}
                           </span>
                         </div>
-                        
-                        {selected ? (
+                        {selected && (
                           <span
                             className={`absolute inset-y-0 right-0 flex items-center pr-3 ${
-                              active ? 'text-white dark:text-white' : 'text-primary-600 dark:text-primary-400'
+                              active ? 'text-white' : 'text-primary-600 dark:text-primary-400'
                             }`}
                           >
                             <CheckIcon className="h-5 w-5" aria-hidden="true" />
                           </span>
-                        ) : null}
+                        )}
                       </>
                     )}
                   </Listbox.Option>
