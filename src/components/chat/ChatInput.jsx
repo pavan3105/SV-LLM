@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { PaperAirplaneIcon, XMarkIcon } from '@heroicons/react/24/solid';
+import { CommandLineIcon } from '@heroicons/react/24/outline';
 import { useTheme } from '../../context/ThemeContext';
 import { useChat } from '../../hooks/useChat';
 
@@ -52,18 +53,25 @@ const ChatInput = ({ onSubmit, isLoading }) => {
 
   return (
     <form onSubmit={handleSubmit} className="relative">
-      <div className={`relative rounded-lg border ${
-        darkMode ? 'border-gray-700 bg-dark-100' : 'border-gray-300 bg-white'
-      } overflow-hidden focus-within:ring-2 focus-within:ring-primary-500 focus-within:border-primary-500`}>
+      <div className={`relative rounded-xl border ${
+        darkMode 
+          ? 'border-gray-700 bg-dark-100 shadow-inner shadow-gray-800' 
+          : 'border-gray-300 bg-white shadow-sm'
+      } overflow-hidden focus-within:ring-2 focus-within:ring-secondary-500 focus-within:border-secondary-500`}>
+        {/* Command icon */}
+        <div className="absolute left-3 top-3 text-gray-400">
+          <CommandLineIcon className="h-5 w-5" />
+        </div>
+        
         {/* Textarea for input */}
         <textarea
           ref={textareaRef}
           value={currentPrompt}
           onChange={(e) => handleChange(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Ask a security question or enter code to analyze..."
+          placeholder="Chat for help in security verification"
           rows="1"
-          className={`block w-full resize-none border-0 bg-transparent py-3 px-4 pr-24 focus:ring-0 ${
+          className={`block w-full resize-none border-0 bg-transparent py-3 px-4 pl-12 pr-24 focus:ring-0 ${
             darkMode ? 'text-white placeholder:text-gray-400' : 'text-gray-900 placeholder:text-gray-500'
           }`}
           disabled={isLoading}
@@ -91,10 +99,10 @@ const ChatInput = ({ onSubmit, isLoading }) => {
           <button
             type="submit"
             disabled={isLoading || !currentPrompt.trim()}
-            className={`p-1.5 rounded-full transition-colors ${
+            className={`p-2 rounded-full transition-colors ${
               isLoading || !currentPrompt.trim()
                 ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-                : 'bg-primary-600 hover:bg-primary-700 text-white'
+                : 'bg-gradient-to-r from-cyan-600 to-cyan-700 hover:from-cyan-700 hover:to-cyan-800 text-white'
             }`}
           >
             <PaperAirplaneIcon className="h-5 w-5" />

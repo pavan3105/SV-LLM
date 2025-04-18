@@ -5,6 +5,14 @@ import LoadingIndicator from './LoadingIndicator';
 import MissingInputsForm from './MissingInputsForm';
 import { useTheme } from '../../context/ThemeContext';
 import { useChat } from '../../hooks/useChat';
+import { 
+  ShieldCheckIcon, 
+  BugAntIcon, 
+  ClipboardDocumentCheckIcon, 
+  ExclamationTriangleIcon, 
+  BeakerIcon, 
+  DocumentMagnifyingGlassIcon 
+} from '@heroicons/react/24/outline';
 
 const ChatWindow = ({
   messages,
@@ -101,26 +109,49 @@ const ChatWindow = ({
 
   const emptyState = messages.length === 0 && !isChatLoading;
 
-  const suggestedPrompts = [
+  // Security agent boxes
+  const securityAgentBoxes = [
     {
-      title: "Security Analysis",
-      description: "Get insights on the security of your system",
-      text: "Can you analyze the security implications of a microservice architecture with a shared API gateway and service-to-service communication?"
-    },
-    {
-      title: "Code Security Review",
-      description: "Review code for security issues",
-      text: "Review this authentication function for security vulnerabilities:\n\nfunction authenticate(username, password) {\n  const user = db.findUser(username);\n  if (user && user.password === password) {\n    return generateToken(user);\n  }\n  return null;\n}"
-    },
-    {
-      title: "Security Best Practices",
-      description: "Learn about security best practices",
-      text: "What are the best practices for securely storing user credentials in a web application?"
+      title: "Security Question Answering",
+      description: "Get answers to security-related questions and concepts",
+      icon: ShieldCheckIcon,
+      color: "primary",
+      prompt: "What are the most common web application vulnerabilities and how can I protect against them?"
     },
     {
       title: "Vulnerability Detection",
-      description: "Detect vulnerabilities in your hardware design",
-      text: "Can you detect vulnerabilities in this hardware design?"
+      description: "Scan code and systems for potential security issues",
+      icon: BugAntIcon,
+      color: "danger",
+      prompt: "Can you analyze this authentication function for potential vulnerabilities?\n\nfunction login(username, password) {\n  const user = users.find(u => u.username === username);\n  if(user && user.password === password) {\n    return generateToken(user);\n  }\n  return null;\n}"
+    },
+    {
+      title: "Security Asset Identification",
+      description: "Identify critical assets that need protection",
+      icon: DocumentMagnifyingGlassIcon,
+      color: "success",
+      prompt: "Help me identify the critical security assets in a typical e-commerce application that handles payment information."
+    },
+    {
+      title: "Threat Modeling & Test Plan",
+      description: "Create threat models and security test plans",
+      icon: ExclamationTriangleIcon,
+      color: "warning",
+      prompt: "Can you help me create a threat model for a mobile banking application? Include potential threats and a test plan to validate security controls."
+    },
+    {
+      title: "Security Property Generation",
+      description: "Generate security properties and requirements",
+      icon: ClipboardDocumentCheckIcon,
+      color: "secondary",
+      prompt: "Generate security properties and requirements for a healthcare application that handles patient data and must be HIPAA compliant."
+    },
+    {
+      title: "Bug Validation Through Testbench",
+      description: "Validate security fixes with virtual testbenches",
+      icon: BeakerIcon,
+      color: "info",
+      prompt: "I fixed a SQL injection vulnerability in my code. Can you help me create a testbench to validate the fix is working properly?"
     }
   ];
 
@@ -136,21 +167,33 @@ const ChatWindow = ({
           <div className="h-full flex flex-col items-center justify-center p-6 text-center">
             <h2 className="text-2xl font-bold mb-3">Welcome to SV-LLM</h2>
             <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-md">
-              Your security-focused AI assistant.
+              One-Stop Solution for Security Verification
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl w-full">
-              {suggestedPrompts.map((prompt, index) => (
+            
+            {/* Security agent boxes - 3x2 grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl w-full mb-6">
+              {securityAgentBoxes.map((agent, index) => (
                 <button
                   key={index}
-                  className={`p-4 text-left rounded-lg transition-all ${
+                  className={`p-5 text-left rounded-lg transition-all flex flex-col h-full ${
                     darkMode 
-                      ? 'bg-dark-100 hover:bg-dark-400 border border-gray-700' 
-                      : 'bg-gray-100 hover:bg-gray-200 border border-gray-200'
+                      ? 'bg-cyan-900 bg-opacity-20 hover:bg-opacity-30 border border-cyan-700 text-white' 
+                      : 'bg-cyan-50 hover:bg-cyan-100 border border-cyan-200 text-gray-800'
                   }`}
-                  onClick={() => handleSubmit(prompt.text)}
+                  onClick={() => handleSubmit(agent.prompt)}
                 >
-                  <h3 className="font-medium mb-1">{prompt.title}</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{prompt.description}</p>
+                  <div className={`inline-flex items-center justify-center w-10 h-10 rounded-full mb-3 ${
+                    darkMode 
+                      ? 'bg-cyan-900 bg-opacity-50 text-cyan-400' 
+                      : 'bg-cyan-100 text-cyan-700'
+                  }`}>
+                    <agent.icon className="h-5 w-5" />
+                  </div>
+                  <h3 className={`font-medium mb-2 text-cyan-600 dark:text-cyan-400`}>{agent.title}</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">{agent.description}</p>
+                  <div className={`text-xs mt-auto text-cyan-600 dark:text-cyan-400 font-medium`}>
+                    Try now →
+                  </div>
                 </button>
               ))}
             </div>

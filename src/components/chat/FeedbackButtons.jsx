@@ -67,7 +67,7 @@ const FeedbackButtons = ({ messageId, onProvideFeedback }) => {
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col w-full max-w-2xl">
       {/* Emoji reaction buttons */}
       <div className="flex items-center space-x-1">
         <span className="text-xs text-gray-500 dark:text-gray-400 mr-1">
@@ -103,17 +103,17 @@ const FeedbackButtons = ({ messageId, onProvideFeedback }) => {
         )}
       </div>
       
-      {/* Text feedback form */}
+      {/* Text feedback form - widened */}
       {showFeedbackForm && (
-        <div className="mt-2">
+        <div className="mt-2 w-full">
           <textarea
-            className={`w-full p-2 text-sm rounded border ${
+            className={`w-full p-3 text-sm rounded border ${
               darkMode 
                 ? 'bg-dark-200 border-gray-700 text-white' 
                 : 'bg-white border-gray-300 text-gray-900'
             } focus:ring-2 focus:ring-primary-500 focus:border-primary-500`}
             placeholder="Tell us more about your feedback..."
-            rows="3"
+            rows="4"
             value={feedbackText}
             onChange={(e) => setFeedbackText(e.target.value)}
           />
