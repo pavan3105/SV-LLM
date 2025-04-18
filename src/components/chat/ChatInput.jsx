@@ -55,9 +55,9 @@ const ChatInput = ({ onSubmit, isLoading }) => {
     <form onSubmit={handleSubmit} className="relative">
       <div className={`relative rounded-xl border ${
         darkMode 
-          ? 'border-gray-700 bg-dark-100 shadow-inner shadow-gray-800' 
-          : 'border-gray-300 bg-white shadow-sm'
-      } overflow-hidden focus-within:ring-2 focus-within:ring-secondary-500 focus-within:border-secondary-500`}>
+          ? 'border-primary-900 bg-primary-900 bg-opacity-20 shadow-inner shadow-primary-800' 
+          : 'border-primary-200 bg-primary-50 shadow-sm'
+      } overflow-hidden focus-within:ring-2 focus-within:ring-primary-500 focus-within:border-primary-500`}>
         {/* Command icon */}
         <div className="absolute left-3 top-3 text-gray-400">
           <CommandLineIcon className="h-5 w-5" />
@@ -72,7 +72,7 @@ const ChatInput = ({ onSubmit, isLoading }) => {
           placeholder="Chat for help in security verification"
           rows="1"
           className={`block w-full resize-none border-0 bg-transparent py-3 px-4 pl-12 pr-24 focus:ring-0 ${
-            darkMode ? 'text-white placeholder:text-gray-400' : 'text-gray-900 placeholder:text-gray-500'
+            darkMode ? 'text-white placeholder:text-primary-400' : 'text-gray-900 placeholder:text-primary-600'
           }`}
           disabled={isLoading}
         />
@@ -86,8 +86,8 @@ const ChatInput = ({ onSubmit, isLoading }) => {
               onClick={handleClear}
               className={`p-1 rounded-full ${
                 darkMode 
-                  ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700' 
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                  ? 'text-primary-400 hover:text-primary-200 hover:bg-primary-700 hover:bg-opacity-50' 
+                  : 'text-primary-600 hover:text-primary-700 hover:bg-primary-100'
               }`}
             >
               <XMarkIcon className="h-5 w-5" />
@@ -102,7 +102,7 @@ const ChatInput = ({ onSubmit, isLoading }) => {
             className={`p-2 rounded-full transition-colors ${
               isLoading || !currentPrompt.trim()
                 ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-                : 'bg-gradient-to-r from-cyan-600 to-cyan-700 hover:from-cyan-700 hover:to-cyan-800 text-white'
+                : 'bg-primary-600 hover:bg-primary-700 text-white'
             }`}
           >
             <PaperAirplaneIcon className="h-5 w-5" />

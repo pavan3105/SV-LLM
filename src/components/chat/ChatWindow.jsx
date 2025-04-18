@@ -6,7 +6,7 @@ import MissingInputsForm from './MissingInputsForm';
 import { useTheme } from '../../context/ThemeContext';
 import { useChat } from '../../hooks/useChat';
 import { 
-  ShieldCheckIcon, 
+  ChatBubbleLeftRightIcon, 
   BugAntIcon, 
   ClipboardDocumentCheckIcon, 
   ExclamationTriangleIcon, 
@@ -114,7 +114,7 @@ const ChatWindow = ({
     {
       title: "Security Question Answering",
       description: "Get answers to security-related questions and concepts",
-      icon: ShieldCheckIcon,
+      icon: ChatBubbleLeftRightIcon,
       color: "primary",
       prompt: "What are the most common web application vulnerabilities and how can I protect against them?"
     },
@@ -122,35 +122,35 @@ const ChatWindow = ({
       title: "Vulnerability Detection",
       description: "Scan code and systems for potential security issues",
       icon: BugAntIcon,
-      color: "danger",
+      color: "primary",
       prompt: "Can you analyze this authentication function for potential vulnerabilities?\n\nfunction login(username, password) {\n  const user = users.find(u => u.username === username);\n  if(user && user.password === password) {\n    return generateToken(user);\n  }\n  return null;\n}"
     },
     {
       title: "Security Asset Identification",
       description: "Identify critical assets that need protection",
       icon: DocumentMagnifyingGlassIcon,
-      color: "success",
+      color: "primary",
       prompt: "Help me identify the critical security assets in a typical e-commerce application that handles payment information."
     },
     {
       title: "Threat Modeling & Test Plan",
       description: "Create threat models and security test plans",
       icon: ExclamationTriangleIcon,
-      color: "warning",
+      color: "primary",
       prompt: "Can you help me create a threat model for a mobile banking application? Include potential threats and a test plan to validate security controls."
     },
     {
       title: "Security Property Generation",
       description: "Generate security properties and requirements",
       icon: ClipboardDocumentCheckIcon,
-      color: "secondary",
+      color: "primary",
       prompt: "Generate security properties and requirements for a healthcare application that handles patient data and must be HIPAA compliant."
     },
     {
       title: "Bug Validation Through Testbench",
       description: "Validate security fixes with virtual testbenches",
       icon: BeakerIcon,
-      color: "info",
+      color: "primary",
       prompt: "I fixed a SQL injection vulnerability in my code. Can you help me create a testbench to validate the fix is working properly?"
     }
   ];
@@ -177,21 +177,21 @@ const ChatWindow = ({
                   key={index}
                   className={`p-5 text-left rounded-lg transition-all flex flex-col h-full ${
                     darkMode 
-                      ? 'bg-cyan-900 bg-opacity-20 hover:bg-opacity-30 border border-cyan-700 text-white' 
-                      : 'bg-cyan-50 hover:bg-cyan-100 border border-cyan-200 text-gray-800'
+                      ? 'bg-primary-900 bg-opacity-20 hover:bg-opacity-30 border border-primary-700 text-white' 
+                      : 'bg-primary-50 hover:bg-primary-100 border border-primary-200 text-gray-800'
                   }`}
                   onClick={() => handleSubmit(agent.prompt)}
                 >
                   <div className={`inline-flex items-center justify-center w-10 h-10 rounded-full mb-3 ${
                     darkMode 
-                      ? 'bg-cyan-900 bg-opacity-50 text-cyan-400' 
-                      : 'bg-cyan-100 text-cyan-700'
+                      ? 'bg-primary-900 bg-opacity-50 text-primary-400' 
+                      : 'bg-primary-100 text-primary-700'
                   }`}>
                     <agent.icon className="h-5 w-5" />
                   </div>
-                  <h3 className={`font-medium mb-2 text-cyan-600 dark:text-cyan-400`}>{agent.title}</h3>
+                  <h3 className={`font-medium mb-2 text-primary-600 dark:text-primary-400`}>{agent.title}</h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">{agent.description}</p>
-                  <div className={`text-xs mt-auto text-cyan-600 dark:text-cyan-400 font-medium`}>
+                  <div className={`text-xs mt-auto text-primary-600 dark:text-primary-400 font-medium`}>
                     Try now →
                   </div>
                 </button>
