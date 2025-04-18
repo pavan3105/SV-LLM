@@ -16,7 +16,8 @@ export const ChatProvider = ({ children }) => {
   const [loadingChats, setLoadingChats] = useState({});
   const [error, setError] = useState(null);
   const [chatHistory, setChatHistory] = useState([]);
-  const [chatPrompts, setChatPrompts] = useState({});  // New state to track prompts per chat
+  const [chatPrompts, setChatPrompts] = useState({});  // State to track prompts per chat
+  const [missingInputs, setMissingInputs] = useState(null); // New state for missing inputs
   
   const activeChatRef = useRef(null);
 
@@ -173,7 +174,9 @@ export const ChatProvider = ({ children }) => {
       [targetChatId]: ''
     }));
     
+    // Reset error and missing inputs state
     setError(null);
+    setMissingInputs(null);
     
     try {
       const contextMessages = chatWithUserMessage.messages.slice(-Math.floor(contextWindow / 200)); 
@@ -213,9 +216,80 @@ export const ChatProvider = ({ children }) => {
         setChatHistory(finalHistory);
         storeChatHistory(finalHistory);
       }
-    } catch (err) {
-      console.error('Error sending message:', err);
-      setError(err);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      
+      // Check if this is a missing_inputs error
+      if (error.response?.data?.status === 'missing_inputs') {
+        // Set missing inputs state to be displayed in the UI
+        setMissingInputs(error.response.data.required_inputs);
+        
+        // Create an assistant message to prompt for missing inputs
+        const missingInputsMessage = {
+          id: uuidv4(),
+          role: 'assistant',
+          content: error.response.data.content || `I need additional information to process your request. Please provide the missing details.`,
+          timestamp: new Date().toISOString(),
+          hasMissingInputs: true // Flag to indicate this message has missing inputs
+        };
+        
+        if (activeChatId === targetChatId) {
+          setMessages(prev => [...prev, missingInputsMessage]);
+        }
+        
+        // Update chat history with error message
+        const latestChatHistory = loadChatHistory();
+        const latestTargetChat = latestChatHistory.find(c => c.id === targetChatId);
+        
+        if (latestTargetChat) {
+          const chatWithMissingInputs = {
+            ...latestTargetChat,
+            messages: [...latestTargetChat.messages, missingInputsMessage],
+            lastUpdated: new Date().toISOString()
+          };
+          
+          const updatedHistory = latestChatHistory.map(c => 
+            c.id === targetChatId ? chatWithMissingInputs : c
+          );
+          
+          setChatHistory(updatedHistory);
+          storeChatHistory(updatedHistory);
+        }
+      } else {
+        // Handle other types of errors
+        setError(error);
+        
+        // Create an error message to show to the user
+        const errorMessage = {
+          id: uuidv4(),
+          role: 'assistant',
+          content: `I encountered an error: ${error.message || 'Unknown error'}. Please try again or check your input.`,
+          timestamp: new Date().toISOString()
+        };
+        
+        if (activeChatId === targetChatId) {
+          setMessages(prev => [...prev, errorMessage]);
+        }
+        
+        // Update chat history with error message
+        const latestChatHistory = loadChatHistory();
+        const latestTargetChat = latestChatHistory.find(c => c.id === targetChatId);
+        
+        if (latestTargetChat) {
+          const chatWithError = {
+            ...latestTargetChat, 
+            messages: [...latestTargetChat.messages, errorMessage],
+            lastUpdated: new Date().toISOString()
+          };
+          
+          const updatedHistory = latestChatHistory.map(c => 
+            c.id === targetChatId ? chatWithError : c
+          );
+          
+          setChatHistory(updatedHistory);
+          storeChatHistory(updatedHistory);
+        }
+      }
     } finally {
       // Clear loading state
       setLoadingChats(prev => ({
@@ -272,6 +346,20 @@ export const ChatProvider = ({ children }) => {
 
   const activeChat = chatHistory.find(c => c.id === activeChatId) || null;
 
+  // Handle missing inputs submission
+  const handleMissingInputsSubmit = (inputs) => {
+    // Clear missing inputs state
+    setMissingInputs(null);
+    
+    // Format the inputs as text to include in the next message
+    const inputsText = Object.entries(inputs)
+      .map(([key, value]) => `${key}: ${value}`)
+      .join('\n');
+    
+    // Send the inputs as a new message
+    sendMessage(inputsText);
+  };
+
   const value = {
     messages,
     isLoading,
@@ -287,7 +375,9 @@ export const ChatProvider = ({ children }) => {
     refreshChatHistory,
     chatPrompts,  // Expose chat prompts
     updateChatPrompt,  // Method to update chat prompts
-    renameChatTitle
+    renameChatTitle,
+    missingInputs,  // Expose missing inputs
+    handleMissingInputsSubmit,  // Method to handle missing inputs submission
   };
 
   return (

@@ -10,6 +10,7 @@ const BACKEND_API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:50
  * @param {string} params.model - Model ID selected by the user (e.g., 'gpt-4')
  * @param {string} params.apiKey - API key provided by the user
  * @returns {Promise<Object>} - Response from the backend
+ * @throws {Error} - Error object with response data for missing inputs
  */
 export const sendMessageToLLM = async ({ messages, model, apiKey }) => {
   // Extract the latest user message
@@ -50,24 +51,27 @@ export const sendMessageToLLM = async ({ messages, model, apiKey }) => {
       content: response.data.response
     };
   } catch (error) {
-    // Handle missing inputs case
+    // Handle missing inputs case - throw the error with response data
     if (error.response && error.response.data.status === 'missing_inputs') {
-      console.error('Missing inputs:', error.response.data.required_inputs);
-      return {
-        role: 'assistant',
-        content: `I need additional information to answer your question. Please provide details about: ${Object.values(error.response.data.required_inputs).flat().join(', ')}`
-      };
+      console.log('Missing inputs detected:', error.response.data.required_inputs);
+      
+      // For vulnerability detection, add a special message
+      if (error.response.data.detected_intent && 
+          error.response.data.detected_intent.includes('vulnerability_detection')) {
+        error.response.data.content = 'To perform vulnerability detection, I need additional information. Please provide your design specification file and select a vulnerability type from the options below.';
+      } else {
+        error.response.data.content = `I need additional information to answer your question. Please provide details about: ${Object.values(error.response.data.required_inputs).flat().join(', ')}`;
+      }
+      
+      throw error; 
     }
     
     // Handle other errors
     console.error('Backend API error:', error);
-    
-    // Provide a user-friendly error message
     const errorMessage = error.response?.data?.message || 'Error communicating with backend';
     
     return {
       role: 'assistant',
       content: `I encountered an issue while processing your request: ${errorMessage}. Please try again or consider using a different model.`
     };
-  }
-};
+  }}

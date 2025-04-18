@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import Settings from './pages/Settings';
 import Help from './pages/Help';
 import NotFound from './pages/NotFound';
+import VulnerabilityDetectionTest from './pages/VulnerabilityDetectionTest';
 
 // Context Providers
 import { ThemeProvider } from './context/ThemeContext';
@@ -47,6 +48,7 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/help" element={<Help />} />
+                    <Route path="/test/vulnerability-detection" element={<VulnerabilityDetectionTest />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Router>

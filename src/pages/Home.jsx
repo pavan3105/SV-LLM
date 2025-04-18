@@ -11,7 +11,8 @@ const Home = () => {
     sendMessage, 
     error,
     provideFeedback,
-    activeChat
+    activeChat,
+    handleMissingInputsSubmit  // Add this to handle missing inputs submission
   } = useChat();
 
   return (
@@ -32,7 +33,8 @@ const Home = () => {
             onSendMessage={sendMessage}
             onProvideFeedback={provideFeedback}
             selectedModel={selectedModel}
-            activeChatId={activeChat?.id} 
+            activeChatId={activeChat?.id}
+            onMissingInputsSubmit={handleMissingInputsSubmit}  // Pass the handler
           />
         </div>
 
