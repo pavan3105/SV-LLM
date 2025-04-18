@@ -17,7 +17,7 @@ export const ChatProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [chatHistory, setChatHistory] = useState([]);
   const [chatPrompts, setChatPrompts] = useState({});  // State to track prompts per chat
-  const [missingInputs, setMissingInputs] = useState(null); // New state for missing inputs
+  const [missingInputs, setMissingInputs] = useState(null); // State for missing inputs
   
   const activeChatRef = useRef(null);
 
@@ -43,6 +43,8 @@ export const ChatProvider = ({ children }) => {
       setActiveChatId(history[0].id);
       setMessages(history[0].messages || []);
       activeChatRef.current = history[0];
+      // Reset missing inputs when refreshing chat history
+      setMissingInputs(null);
     } else {
       setActiveChatId(null);
       setMessages([]);
@@ -52,6 +54,8 @@ export const ChatProvider = ({ children }) => {
   };
 
   const createNewChat = () => {
+    setMissingInputs(null);
+    
     const newChat = {
       id: uuidv4(),
       title: 'New Chat',
@@ -79,10 +83,13 @@ export const ChatProvider = ({ children }) => {
   };
 
   const resetChat = () => {
+    setMissingInputs(null);
     createNewChat();
   };
 
   const selectChat = (chatId) => {
+    setMissingInputs(null);
+    
     setActiveChatId(chatId);
     
     const chat = chatHistory.find(c => c.id === chatId);
@@ -93,6 +100,10 @@ export const ChatProvider = ({ children }) => {
   };
 
   const deleteChat = (chatId) => {
+    if (activeChatId === chatId) {
+      setMissingInputs(null);
+    }
+    
     const updatedHistory = chatHistory.filter(c => c.id !== chatId);
     setChatHistory(updatedHistory);
     storeChatHistory(updatedHistory);
