@@ -9,10 +9,16 @@ const BACKEND_API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:50
  * @param {Array} params.messages - Array of message objects
  * @param {string} params.model - Model ID selected by the user (e.g., 'gpt-4')
  * @param {string} params.apiKey - API key provided by the user
+ * @param {Object} params.additionalData - Additional data like files or vulnerability selections
  * @returns {Promise<Object>} - Response from the backend
  * @throws {Error} - Error object with response data for missing inputs
  */
-export const sendMessageToLLM = async ({ messages, model, apiKey }) => {
+export const sendMessageToLLM = async ({ 
+  messages, 
+  model, 
+  apiKey, 
+  additionalData = {} 
+}) => {
   // Extract the latest user message
   const userMessages = messages.filter(msg => msg.role === 'user');
   const latestUserMessage = userMessages[userMessages.length - 1];
@@ -30,16 +36,21 @@ export const sendMessageToLLM = async ({ messages, model, apiKey }) => {
     console.log('Sending request to backend:', {
       query: latestUserMessage.content,
       history: history,
-      model: model
+      model: model,
+      ...additionalData
       // API key not logged for security
     });
     
-    const response = await axios.post(`${BACKEND_API_URL}/api/chat`, {
+    const requestData = {
       query: latestUserMessage.content,
       history: history,
       model: model,
-      api_key: apiKey
-    }, {
+      api_key: apiKey,
+      // Include any additional data like design files or vulnerability selections
+      ...additionalData
+    };
+    
+    const response = await axios.post(`${BACKEND_API_URL}/api/chat`, requestData, {
       headers: {
         'Content-Type': 'application/json'
       }
@@ -55,8 +66,13 @@ export const sendMessageToLLM = async ({ messages, model, apiKey }) => {
     if (error.response && error.response.data.status === 'missing_inputs') {
       console.log('Missing inputs detected:', error.response.data.required_inputs);
       
-      // For vulnerability detection, add a special message
+      // For security_property_generation, add a specific message
       if (error.response.data.detected_intent && 
+          error.response.data.detected_intent.includes('security_property_generation')) {
+        error.response.data.content = 'To generate security properties, I need your design specification file and the vulnerability type you want to protect against.';
+      }
+      // For vulnerability detection, add a special message
+      else if (error.response.data.detected_intent && 
           error.response.data.detected_intent.includes('vulnerability_detection')) {
         error.response.data.content = 'To perform vulnerability detection, I need additional information. Please provide your design specification file and select a vulnerability type from the options below.';
       } else {
@@ -74,4 +90,5 @@ export const sendMessageToLLM = async ({ messages, model, apiKey }) => {
       role: 'assistant',
       content: `I encountered an issue while processing your request: ${errorMessage}. Please try again or consider using a different model.`
     };
-  }}
+  }
+}

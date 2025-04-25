@@ -131,7 +131,8 @@ export const ChatProvider = ({ children }) => {
     }
   };
 
-  const sendMessage = async (text) => {
+  // New helper function to send messages with additional data
+  const sendMessageWithAdditionalData = async (text, additionalData = {}) => {
     if (!text.trim()) return;
     
     if (!apiKey) {
@@ -192,10 +193,12 @@ export const ChatProvider = ({ children }) => {
     try {
       const contextMessages = chatWithUserMessage.messages.slice(-Math.floor(contextWindow / 200)); 
       
+      // Send the message with additional data
       const response = await sendMessageToLLM({
         messages: contextMessages,
         model: selectedModel,
-        apiKey
+        apiKey,
+        additionalData
       });
       
       const assistantMessage = {
@@ -309,6 +312,48 @@ export const ChatProvider = ({ children }) => {
       }));
     }
   };
+
+  const sendMessage = async (text) => {
+    // Call the helper function without additional data
+    await sendMessageWithAdditionalData(text, {});
+  };
+  
+  // Handle missing inputs submission
+  const handleMissingInputsSubmit = (inputs) => {
+    // Clear missing inputs state
+    setMissingInputs(null);
+    
+    // Store the additional inputs to be sent with the next message
+    const additionalData = {};
+    
+    // Handle the design file content if provided
+    if (inputs.design_spec) {
+      additionalData.design_file = inputs.design_spec;
+      console.log("Design file content prepared for sending");
+    }
+    
+    // Handle vulnerability/threat selection
+    if (inputs.vulnerability) {
+      additionalData.vulnerability = inputs.vulnerability;
+      console.log("Vulnerability selection prepared:", inputs.vulnerability);
+    }
+    
+    // Format the inputs as text to include in the next message
+    const inputsList = [];
+    for (const [key, value] of Object.entries(inputs)) {
+      if (key === 'design_spec') {
+        // For design files, just include a placeholder text not the content
+        inputsList.push(`Design specification: [File uploaded]`);
+      } else {
+        inputsList.push(`${key}: ${value}`);
+      }
+    }
+    
+    const inputsText = inputsList.join('\n');
+    
+    // Send the prepared message with the additional data
+    sendMessageWithAdditionalData(inputsText, additionalData);
+  };
   
   const provideFeedback = (messageId, feedback) => {
     console.log(`Feedback for message ${messageId}:`, feedback);
@@ -356,20 +401,6 @@ export const ChatProvider = ({ children }) => {
   };
 
   const activeChat = chatHistory.find(c => c.id === activeChatId) || null;
-
-  // Handle missing inputs submission
-  const handleMissingInputsSubmit = (inputs) => {
-    // Clear missing inputs state
-    setMissingInputs(null);
-    
-    // Format the inputs as text to include in the next message
-    const inputsText = Object.entries(inputs)
-      .map(([key, value]) => `${key}: ${value}`)
-      .join('\n');
-    
-    // Send the inputs as a new message
-    sendMessage(inputsText);
-  };
 
   const value = {
     messages,

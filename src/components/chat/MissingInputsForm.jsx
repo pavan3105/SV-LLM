@@ -9,19 +9,48 @@ const MissingInputsForm = ({ missingInputs, onSubmit }) => {
   const [fileName, setFileName] = useState('');
   const [errors, setErrors] = useState({});
   
-  // Predefined vulnerability options for dropdown
+  // Enhanced vulnerability options for dropdown
   const vulnerabilityOptions = [
-    "Buffer Overflow",
-    "Information Leakage",
-    "Timing Side-Channel",
-    "Hardware Trojan",
-    "Fault Injection",
-    "Rowhammer Attack",
-    "Power Analysis",
-    "Cache Side-Channel",
-    "JTAG/Debug Interface Exploitation",
-    "Microarchitectural Attacks"
+    // Side-channel related options
+    { value: "Side Channel Attack", category: "Side Channels" },
+    { value: "Timing Side-Channel", category: "Side Channels" },
+    { value: "Power Analysis Attack", category: "Side Channels" },
+    { value: "Electromagnetic Leakage", category: "Side Channels" },
+    { value: "Cache Timing Attack", category: "Side Channels" },
+    
+    // Physical attacks
+    { value: "Fault Injection", category: "Physical Attacks" },
+    { value: "Laser Fault Injection", category: "Physical Attacks" },
+    { value: "Voltage Glitching", category: "Physical Attacks" },
+    { value: "Physical Probing", category: "Physical Attacks" },
+    
+    // Architecture-level threats
+    { value: "Privilege Escalation", category: "Architecture" },
+    { value: "Information Leakage", category: "Architecture" },
+    { value: "Hardware Trojan", category: "Architecture" },
+    { value: "Buffer Overflow", category: "Architecture" },
+    { value: "Secure Boot Bypass", category: "Architecture" },
+    
+    // Memory-related attacks
+    { value: "Rowhammer Attack", category: "Memory" },
+    { value: "Cold Boot Attack", category: "Memory" },
+    { value: "Memory Scanning", category: "Memory" },
+    { value: "DMA Attack", category: "Memory" },
+    
+    // Protocol attacks
+    { value: "Protocol Downgrade", category: "Protocol" },
+    { value: "Replay Attack", category: "Protocol" },
+    { value: "Man-in-the-Middle", category: "Protocol" }
   ];
+  
+  // Group vulnerability options by category
+  const groupedOptions = vulnerabilityOptions.reduce((acc, option) => {
+    if (!acc[option.category]) {
+      acc[option.category] = [];
+    }
+    acc[option.category].push(option);
+    return acc;
+  }, {});
   
   const handleChange = (field, value) => {
     setInputs(prev => ({ ...prev, [field]: value }));
@@ -61,14 +90,17 @@ const MissingInputsForm = ({ missingInputs, onSubmit }) => {
   
   const validateForm = () => {
     const newErrors = {};
+    
+    // Check if this is for security property generation
+    const isSecurityPropertyGeneration = Object.keys(missingInputs).includes('security_property_generation');
     const isVulnerabilityDetection = Object.keys(missingInputs).includes('vulnerability_detection');
     
     // Check required fields based on the missingInputs
     Object.keys(missingInputs).forEach(intent => {
       missingInputs[intent].forEach(field => {
-        if (isVulnerabilityDetection && field === 'design_spec' && !inputs[field]) {
+        if ((isSecurityPropertyGeneration || isVulnerabilityDetection) && field === 'design_spec' && !inputs[field]) {
           newErrors.design_spec = 'Please upload a design specification file';
-        } else if (isVulnerabilityDetection && field === 'vulnerability' && !inputs[field]) {
+        } else if ((isSecurityPropertyGeneration || isVulnerabilityDetection) && field === 'vulnerability' && !inputs[field]) {
           newErrors.vulnerability = 'Please select a vulnerability type';
         } else if (!inputs[field]) {
           newErrors[field] = `${field.replace(/_/g, ' ')} is required`;
@@ -94,7 +126,8 @@ const MissingInputsForm = ({ missingInputs, onSubmit }) => {
     fields.forEach(field => uniqueFields.add(field));
   });
   
-  // Check if vulnerability_detection intent is present
+  // Check if security property generation intent is present
+  const isSecurityPropertyGeneration = Object.keys(missingInputs).includes('security_property_generation');
   const isVulnerabilityDetection = Object.keys(missingInputs).includes('vulnerability_detection');
   
   return (
@@ -102,12 +135,23 @@ const MissingInputsForm = ({ missingInputs, onSubmit }) => {
       darkMode ? 'bg-dark-100 border-gray-700' : 'bg-white border-gray-200'
     }`}>
       <h3 className="text-lg font-medium mb-4">Additional Information Needed</h3>
-      <p className="mb-4">Please provide the following information to continue:</p>
+      
+      {isSecurityPropertyGeneration && (
+        <p className="mb-4">Please provide the following information to generate security properties for your design:</p>
+      )}
+      
+      {isVulnerabilityDetection && (
+        <p className="mb-4">Please provide the following information to analyze your design for vulnerabilities:</p>
+      )}
+      
+      {!isSecurityPropertyGeneration && !isVulnerabilityDetection && (
+        <p className="mb-4">Please provide the following information to continue:</p>
+      )}
       
       <form onSubmit={handleSubmit}>
         {Array.from(uniqueFields).map(field => (
           <div key={field} className="mb-4">
-            {field === 'design_spec' && isVulnerabilityDetection ? (
+            {(field === 'design_spec' && (isSecurityPropertyGeneration || isVulnerabilityDetection)) ? (
               <div>
                 <label className="block text-sm font-medium mb-2">
                   Design Specification (Upload File) <span className="text-red-500">*</span>
@@ -148,10 +192,10 @@ const MissingInputsForm = ({ missingInputs, onSubmit }) => {
                   </div>
                 </div>
               </div>
-            ) : field === 'vulnerability' && isVulnerabilityDetection ? (
+            ) : field === 'vulnerability' && (isSecurityPropertyGeneration || isVulnerabilityDetection) ? (
               <div>
                 <label className="block text-sm font-medium mb-2">
-                  Select Vulnerability Type <span className="text-red-500">*</span>
+                  Select Vulnerability/Threat Type <span className="text-red-500">*</span>
                 </label>
                 <select
                   value={inputs[field] || ''}
@@ -164,9 +208,15 @@ const MissingInputsForm = ({ missingInputs, onSubmit }) => {
                         : 'bg-white border-gray-300 text-gray-900'
                   }`}
                 >
-                  <option value="" disabled>Select a vulnerability type</option>
-                  {vulnerabilityOptions.map(option => (
-                    <option key={option} value={option}>{option}</option>
+                  <option value="" disabled>Select a vulnerability/threat type</option>
+                  
+                  {/* Group options by category */}
+                  {Object.entries(groupedOptions).map(([category, options]) => (
+                    <optgroup key={category} label={category}>
+                      {options.map(option => (
+                        <option key={option.value} value={option.value}>{option.value}</option>
+                      ))}
+                    </optgroup>
                   ))}
                 </select>
                 {errors.vulnerability && (
