@@ -17,7 +17,7 @@ const LoadingIndicator = ({ model }) => {
       
       {/* Text */}
       <span className="text-sm font-medium">
-        {model ? `${model} is thinking` : 'Generating response'}
+        {'SV-LLM is thinking'}
       </span>
     </div>
   );
