@@ -1,14 +1,13 @@
 import React from 'react';
 import { 
   Bars3Icon, 
-  InformationCircleIcon,
   SunIcon,
   MoonIcon,
   ShieldCheckIcon
 } from '@heroicons/react/24/outline';
 import { useTheme } from '../../context/ThemeContext';
 
-const Header = ({ toggleSidebar, toggleInfoPanel, sidebarOpen, infoPanelOpen }) => {
+const Header = ({ toggleSidebar, sidebarOpen }) => {
   const { darkMode, toggleDarkMode } = useTheme();
 
   return (
@@ -49,7 +48,7 @@ const Header = ({ toggleSidebar, toggleInfoPanel, sidebarOpen, infoPanelOpen }) 
           </div>
         </div>
         
-        {/* Right section: Actions */}
+        {/* Right section: Dark mode toggle only */}
         <div className="flex items-center space-x-2">
           {/* Dark mode toggle */}
           <button
@@ -68,24 +67,6 @@ const Header = ({ toggleSidebar, toggleInfoPanel, sidebarOpen, infoPanelOpen }) 
             )}
             <span className="sr-only">
               {darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-            </span>
-          </button>
-          
-          {/* Info panel toggle */}
-          <button
-            type="button"
-            className={`p-2 rounded-full ${
-              infoPanelOpen
-                ? 'bg-cyan-100 text-cyan-700 dark:bg-cyan-900 dark:text-cyan-300'
-                : darkMode 
-                  ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700' 
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
-            }`}
-            onClick={toggleInfoPanel}
-          >
-            <InformationCircleIcon className="h-5 w-5" />
-            <span className="sr-only">
-              {infoPanelOpen ? 'Close info panel' : 'Open info panel'}
             </span>
           </button>
         </div>

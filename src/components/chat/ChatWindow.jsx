@@ -156,7 +156,7 @@ const ChatWindow = ({
   ];
 
   return (
-    <div className={`h-full flex flex-col rounded-lg overflow-hidden ${darkMode ? 'bg-dark-200' : 'bg-white'} shadow-lg`}>
+    <div className={`h-full flex flex-col rounded-lg overflow-hidden ${darkMode ? 'bg-dark-200' : 'bg-white'} shadow-lg w-full`}>
       {/* Message area */}
       <div 
         className="flex-1 overflow-y-auto"
@@ -170,8 +170,8 @@ const ChatWindow = ({
               One-Stop Solution for Security Verification
             </p>
             
-            {/* Security agent boxes - 3x2 grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl w-full mb-6">
+            {/* Security agent boxes - 3x2 grid with wider layout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl w-full mb-6">
               {securityAgentBoxes.map((agent, index) => (
                 <button
                   key={index}

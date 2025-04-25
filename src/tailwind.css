@@ -362,3 +362,160 @@ input[type="range"]::-moz-range-thumb {
 .prose tr:hover {
   @apply bg-gray-100 dark:bg-dark-100;
 }
+
+/* Maximum width constraints for chat bubbles in wide screens */
+@media (min-width: 1400px) {
+  .message-max-width {
+    max-width: 70%;
+  }
+}
+
+@media (min-width: 1800px) {
+  .message-max-width {
+    max-width: 60%;
+  }
+}
+
+/* Improved code block display for wide screens */
+.prose pre {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* Better table display in wide screens */
+.prose table {
+  width: auto;
+  max-width: 100%;
+}
+
+/* Enhanced chat container in wide screens */
+.wide-chat-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Ensure message content doesn't stretch too wide */
+.message-content-container {
+  max-width: 1200px;
+}
+
+/* Better spacing for security agent boxes in wide screens */
+@media (min-width: 1200px) {
+  .security-agent-grid {
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 1400px;
+  }
+}
+
+/* Add these styles to tailwind.css for improved security properties display */
+
+/* SVA code display styling */
+.sva-display pre {
+  font-family: 'Fira Code', monospace;
+  line-height: 1.4;
+  tab-size: 4;
+  -moz-tab-size: 4;
+  white-space: pre;
+  letter-spacing: -0.025em;
+  padding: 1rem;
+}
+
+.dark .sva-display pre {
+  background-color: #1e1e2e;
+  color: #cdd6f4;
+}
+
+/* Syntax highlighting for SystemVerilog */
+.sva-display .keyword {
+  color: #f38ba8;
+}
+.dark .sva-display .keyword {
+  color: #f5c2e7;
+}
+
+.sva-display .comment {
+  color: #7f849c;
+  font-style: italic;
+}
+
+.sva-display .number {
+  color: #fab387;
+}
+.dark .sva-display .number {
+  color: #f9e2af;
+}
+
+.sva-display .type {
+  color: #89b4fa;
+}
+.dark .sva-display .type {
+  color: #89dceb;
+}
+
+/* Improve the spacing in security property display */
+.security-property-box {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Better download button */
+.download-button {
+  transition: all 0.2s ease;
+}
+
+.download-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.download-button:active {
+  transform: translateY(0);
+}
+
+/* Better scrollbars for code blocks */
+.code-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.code-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.code-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(156, 163, 175, 0.5);
+  border-radius: 20px;
+}
+
+.dark .code-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(75, 85, 99, 0.5);
+}
+
+/* Reduce markdown content spacing */
+.prose p {
+  margin-top: 0.75em;
+  margin-bottom: 0.75em;
+}
+
+.prose pre {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+/* Fix for extra whitespace in code blocks */
+.prose pre code {
+  padding: 0;
+  white-space: pre;
+}
+
+/* Ensure proper spacing between content and security properties */
+.prose + .security-property-display {
+  margin-top: 1rem;
+}
+
+/* Better styling for empty lines in code blocks */
+.prose pre code br {
+  display: block;
+  content: "";
+  margin-top: 0;
+}

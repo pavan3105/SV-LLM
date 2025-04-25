@@ -100,7 +100,8 @@ const MissingInputsForm = ({ missingInputs, onSubmit }) => {
       missingInputs[intent].forEach(field => {
         if ((isSecurityPropertyGeneration || isVulnerabilityDetection) && field === 'design_spec' && !inputs[field]) {
           newErrors.design_spec = 'Please upload a design specification file';
-        } else if ((isSecurityPropertyGeneration || isVulnerabilityDetection) && field === 'vulnerability' && !inputs[field]) {
+        } else if (isVulnerabilityDetection && field === 'vulnerability' && !inputs[field]) {
+          // Only require vulnerability for vulnerability detection, not for security property generation
           newErrors.vulnerability = 'Please select a vulnerability type';
         } else if (!inputs[field]) {
           newErrors[field] = `${field.replace(/_/g, ' ')} is required`;
@@ -137,7 +138,7 @@ const MissingInputsForm = ({ missingInputs, onSubmit }) => {
       <h3 className="text-lg font-medium mb-4">Additional Information Needed</h3>
       
       {isSecurityPropertyGeneration && (
-        <p className="mb-4">Please provide the following information to generate security properties for your design:</p>
+        <p className="mb-4">Please provide the design file to generate security properties:</p>
       )}
       
       {isVulnerabilityDetection && (
@@ -151,7 +152,7 @@ const MissingInputsForm = ({ missingInputs, onSubmit }) => {
       <form onSubmit={handleSubmit}>
         {Array.from(uniqueFields).map(field => (
           <div key={field} className="mb-4">
-            {(field === 'design_spec' && (isSecurityPropertyGeneration || isVulnerabilityDetection)) ? (
+            {field === 'design_spec' ? (
               <div>
                 <label className="block text-sm font-medium mb-2">
                   Design Specification (Upload File) <span className="text-red-500">*</span>
@@ -192,7 +193,8 @@ const MissingInputsForm = ({ missingInputs, onSubmit }) => {
                   </div>
                 </div>
               </div>
-            ) : field === 'vulnerability' && (isSecurityPropertyGeneration || isVulnerabilityDetection) ? (
+            ) : field === 'vulnerability' && isVulnerabilityDetection ? (
+              // Only show vulnerability selector for vulnerability detection intent, not for security_property_generation
               <div>
                 <label className="block text-sm font-medium mb-2">
                   Select Vulnerability/Threat Type <span className="text-red-500">*</span>

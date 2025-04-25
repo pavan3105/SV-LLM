@@ -29,8 +29,8 @@ const MessageList = ({ messages, onProvideFeedback }) => {
         
         return (
           <div key={groupIndex} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-            <div className={`flex ${isUser ? 'flex-row-reverse' : 'flex-row'} max-w-[90%] md:max-w-[85%]`}>
-              {/* Avatar */}
+            <div className={`flex ${isUser ? 'flex-row-reverse' : 'flex-row'} max-w-[85%] lg:max-w-[75%]`}>
+              {/* Avatar and message content */}
               <div className={`flex flex-col items-center mr-3 ${isUser ? 'ml-3 mr-0' : ''}`}>
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                   isUser 
@@ -52,7 +52,7 @@ const MessageList = ({ messages, onProvideFeedback }) => {
               </div>
               
               {/* Message content */}
-              <div className="flex flex-col space-y-2">
+              <div className="flex flex-col space-y-2 max-w-full">
                 {group.map((message, msgIndex) => (
                   <ChatBubble 
                     key={message.id || msgIndex} 

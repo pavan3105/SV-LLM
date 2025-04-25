@@ -41,12 +41,14 @@ export const sendMessageToLLM = async ({
       // API key not logged for security
     });
     
+  
+    const query = additionalData.original_query || latestUserMessage.content;
+    
     const requestData = {
-      query: latestUserMessage.content,
+      query: query,
       history: history,
       model: model,
       api_key: apiKey,
-      // Include any additional data like design files or vulnerability selections
       ...additionalData
     };
     
@@ -66,10 +68,9 @@ export const sendMessageToLLM = async ({
     if (error.response && error.response.data.status === 'missing_inputs') {
       console.log('Missing inputs detected:', error.response.data.required_inputs);
       
-      // For security_property_generation, add a specific message
       if (error.response.data.detected_intent && 
           error.response.data.detected_intent.includes('security_property_generation')) {
-        error.response.data.content = 'To generate security properties, I need your design specification file and the vulnerability type you want to protect against.';
+        error.response.data.content = 'To generate security properties, I need your design file, please upload';
       }
       // For vulnerability detection, add a special message
       else if (error.response.data.detected_intent && 

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import Sidebar from './Sidebar';
 import Header from './Header';
-import InfoPanel from './InfoPanel';
 import { ShieldCheckIcon } from '@heroicons/react/24/outline';
 
 /**
@@ -12,7 +11,6 @@ import { ShieldCheckIcon } from '@heroicons/react/24/outline';
 const MainLayout = ({ children }) => {
   const { darkMode } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 768);
-  const [infoPanelOpen, setInfoPanelOpen] = useState(false);
 
   // Check screen size to set default sidebar state
   useEffect(() => {
@@ -35,11 +33,6 @@ const MainLayout = ({ children }) => {
   // Toggle sidebar visibility
   const toggleSidebar = () => {
     setSidebarOpen(prevState => !prevState);
-  };
-
-  // Toggle info panel visibility
-  const toggleInfoPanel = () => {
-    setInfoPanelOpen(!infoPanelOpen);
   };
 
   return (
@@ -77,26 +70,20 @@ const MainLayout = ({ children }) => {
         {/* Header */}
         <Header 
           toggleSidebar={toggleSidebar} 
-          toggleInfoPanel={toggleInfoPanel}
           sidebarOpen={sidebarOpen}
-          infoPanelOpen={infoPanelOpen}
         />
 
-        {/* Content area with info panel */}
+        {/* Content area - now without info panel */}
         <div className="flex flex-1 overflow-hidden">
-          {/* Main content */}
-          <main className={`flex-1 overflow-y-auto p-6 transition-all duration-300 ease-in-out ${
-            infoPanelOpen ? 'lg:mr-72' : ''
-          } ${
+          {/* Main content - full width now */}
+          <main className="flex-1 overflow-y-auto p-6 transition-all duration-300 ease-in-out ${
             darkMode ? 'bg-opacity-10' : 'bg-opacity-5'
-          }`}>
-            <div className="container mx-auto h-full">
+          }">
+            {/* Wider container to use full available space */}
+            <div className="max-w-full mx-auto h-full">
               {children}
             </div>
           </main>
-
-          {/* Info Panel (right sidebar) */}
-          <InfoPanel isOpen={infoPanelOpen} toggleInfoPanel={toggleInfoPanel} />
         </div>
       </div>
     </div>

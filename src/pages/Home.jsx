@@ -12,12 +12,12 @@ const Home = () => {
     error,
     provideFeedback,
     activeChat,
-    handleMissingInputsSubmit  // Add this to handle missing inputs submission
+    handleMissingInputsSubmit
   } = useChat();
 
   return (
     <MainLayout>
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full w-full">
         {/* Display an error message if there is one */}
         {error && (
           <div className="bg-danger-100 text-danger-800 dark:bg-danger-900 dark:text-danger-100 p-4 mb-4 rounded-lg">
@@ -26,15 +26,15 @@ const Home = () => {
           </div>
         )}
 
-        {/* Main chat interface */}
-        <div className="flex-1 overflow-hidden">
+        {/* Main chat interface - now uses full width */}
+        <div className="flex-1 overflow-hidden w-full">
           <ChatWindow
             messages={messages}
             onSendMessage={sendMessage}
             onProvideFeedback={provideFeedback}
             selectedModel={selectedModel}
             activeChatId={activeChat?.id}
-            onMissingInputsSubmit={handleMissingInputsSubmit}  // Pass the handler
+            onMissingInputsSubmit={handleMissingInputsSubmit}
           />
         </div>
 

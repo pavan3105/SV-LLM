@@ -4,6 +4,8 @@ import hljs from 'highlight.js';
 import 'highlight.js/styles/github-dark.css';
 import { useTheme } from '../../context/ThemeContext';
 import SecurityPropertyDisplay from './SecurityPropertyDisplay';
+// Import the utility functions
+import { extractSVAContent, formatTextContent, formatCodeBlocks } from '../../utils/messageFormatter';
 
 // Initialize markdown parser with enhanced settings
 const md = new MarkdownIt({
@@ -27,52 +29,28 @@ const ChatBubble = ({ message, isUser }) => {
   const { darkMode } = useTheme();
   const [renderedContent, setRenderedContent] = useState('');
   
-  // Function to extract SVA content from message
-  const extractSvaContent = (content) => {
-    // Check if the message contains SVA content markers
-    const svaRegex = /```sva\s*([\s\S]*?)```/g;
-    const match = svaRegex.exec(content);
-    
-    if (match && match[1]) {
-      // Return the SVA content and the content without the SVA block
-      const svaContent = match[1].trim();
-      const contentWithoutSva = content.replace(match[0], '');
-      return { svaContent, contentWithoutSva };
-    }
-    
-    return { svaContent: null, contentWithoutSva: content };
-  };
-  
   // State for SVA content if present
   const [svaContent, setSvaContent] = useState(null);
   
   useEffect(() => {
     if (message.content) {
       try {
-        // Extract SVA content if present
-        const { svaContent, contentWithoutSva } = extractSvaContent(message.content);
+        // Use the utility function to extract SVA content
+        const { svaContent, contentWithoutSva } = extractSVAContent(message.content);
         setSvaContent(svaContent);
         
-        // Process the remaining content
+        // Process the remaining content using formatting utilities
         let processedContent = contentWithoutSva;
         
         if (!isUser) {
-          processedContent = processedContent.replace(/^(\s*)(\*|-)\s+/gm, (match, spaces, bullet) => {
-            const level = Math.floor(spaces.length / 2);
-            return `${'  '.repeat(level)}${bullet} `;
-          });
+          // Use the formatTextContent utility to clean up the text
+          processedContent = formatTextContent(processedContent);
           
-          processedContent = processedContent.replace(/^([A-Za-z0-9\s]+):\s*$/gm, '**$1:**');
+          // Use the formatCodeBlocks utility to improve code block display
+          processedContent = formatCodeBlocks(processedContent);
           
-          processedContent = processedContent.replace(/^(\s*)(\*|-)\s+([A-Za-z0-9\s]+):\s*/gm, 
-            '$1$2 **$3:** ');
-          
-          processedContent = processedContent.replace(/^(\d+)\.\s+/gm, '$1. ');
-          
-          processedContent = processedContent.replace(/^(\s*)(\*|-)\s{2,}/gm, '$1$2 ');
-          
+          // Render the markdown
           const html = md.render(processedContent);
-          
           setRenderedContent(html);
         } else {
           setRenderedContent(md.render(processedContent));
@@ -95,7 +73,7 @@ const ChatBubble = ({ message, isUser }) => {
     <div>
       <div className={`px-6 py-4 ${bubbleClasses}`}>
         <div 
-          className="prose custom-bullets dark:prose-invert max-w-none prose-pre:bg-gray-800 dark:prose-pre:bg-black prose-code:text-pink-600 dark:prose-code:text-pink-400 prose-li:my-1.5 prose-p:my-2.5 prose-headings:mt-5 prose-headings:mb-3 prose-strong:font-bold"
+          className="prose custom-bullets dark:prose-invert max-w-none prose-pre:bg-gray-800 dark:prose-pre:bg-black prose-code:text-pink-600 dark:prose-code:text-pink-400 prose-li:my-1.5 prose-p:my-2 prose-headings:mt-4 prose-headings:mb-2 prose-strong:font-bold"
           dangerouslySetInnerHTML={{ __html: renderedContent }} 
         />
       </div>
