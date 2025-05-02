@@ -319,23 +319,48 @@ export const ChatProvider = ({ children }) => {
   };
   
 
+// In ChatContext.jsx, update the handleMissingInputsSubmit function
+// Update the handleMissingInputsSubmit function in ChatContext.jsx
+
 const handleMissingInputsSubmit = (inputs) => {
   // Clear missing inputs state
   setMissingInputs(null);
   
+  // Log the inputs to debug
+  console.log("Handling missing inputs submission:", inputs);
+  
   // Store the additional inputs to be sent with the next message
   const additionalData = {};
   
-  // Handle the design file content if provided
-  if (inputs.design_spec) {
-    additionalData.design_file = inputs.design_spec;
-    console.log("Design file content prepared for sending");
+  // For threat modeling intent
+  if (inputs.asset_list) {
+    // Pass the asset_list directly as it is, don't try to modify it
+    additionalData.asset_list = inputs.asset_list;
+    console.log("Asset list content length:", inputs.asset_list.length);
   }
   
-  // Handle vulnerability/threat selection
+  // Handle threat modeling answers if present
+  if (inputs.threat_modeling_answers) {
+    additionalData.threat_modeling_answers = inputs.threat_modeling_answers;
+  }
+  
+  // Handle verification answers if present
+  if (inputs.verification_answers) {
+    additionalData.verification_answers = inputs.verification_answers;
+  }
+  
+  // Handle initial threats if present
+  if (inputs.initial_threats) {
+    additionalData.initial_threats = inputs.initial_threats;
+  }
+  
+  // Handle other types of inputs
+  if (inputs.design_spec) {
+    additionalData.design_file = inputs.design_spec;
+  }
+  
   if (inputs.vulnerability) {
     additionalData.vulnerability = inputs.vulnerability;
-    console.log("Vulnerability selection prepared:", inputs.vulnerability);
   }
   
   if (activeChatRef.current && activeChatRef.current.messages.length > 0) {
@@ -343,24 +368,31 @@ const handleMissingInputsSubmit = (inputs) => {
     if (userMessages.length > 0) {
       const originalQuery = userMessages[userMessages.length - 1].content;
       additionalData.original_query = originalQuery;
-      console.log("Original query preserved:", originalQuery);
     }
   }
   
-  // Format the inputs as text to include in the next message
-  const inputsList = [];
-  for (const [key, value] of Object.entries(inputs)) {
-    if (key === 'design_spec') {
-      // For design files, just include a placeholder text not the content
-      inputsList.push(`Design File: [File uploaded]`);
-    } else {
-      inputsList.push(`${key}: ${value}`);
-    }
+  // Create a simple message text for the input
+  let inputsText = "Providing requested information for threat modeling analysis:";
+  
+  // If there's an asset list, add a message about it
+  if (inputs.asset_list) {
+    inputsText += "\n- Asset List: JSON file uploaded";
   }
   
-  const inputsText = inputsList.join('\n');
+  // If there are threat modeling answers, add a message about them
+  if (inputs.threat_modeling_answers) {
+    inputsText += "\n- Threat Modeling Questionnaire: Completed";
+  }
   
-  // Send the prepared message with the additional data
+  // If there are verification answers, add a message about them
+  if (inputs.verification_answers) {
+    inputsText += "\n- Verification Planning Questionnaire: Completed";
+  }
+  
+  // Log what we're sending
+  console.log("About to send message with additionalData containing asset_list");
+  
+  // Send the message with the additional data
   sendMessageWithAdditionalData(inputsText, additionalData);
 };
   
